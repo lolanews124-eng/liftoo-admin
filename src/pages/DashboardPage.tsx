@@ -12,8 +12,27 @@ export function DashboardPage() {
   useEffect(() => {
     Promise.all([adminApi.dashboard(), adminApi.dashboardAnalytics()])
       .then(([s, a]) => {
-        setStats(s);
-        setAnalytics(a.daily);
+        setStats({
+          users: {
+            total: s.users?.total ?? 0,
+            customers: s.users?.customers ?? 0,
+            assistants: s.users?.assistants ?? 0,
+          },
+          bookings: {
+            total: s.bookings?.total ?? 0,
+            active: s.bookings?.active ?? 0,
+            completed: s.bookings?.completed ?? 0,
+          },
+          pendingVerifications: s.pendingVerifications ?? 0,
+          revenue: {
+            total: s.revenue?.total ?? 0,
+            platform: s.revenue?.platform ?? 0,
+            pendingPayouts: s.revenue?.pendingPayouts ?? 0,
+          },
+          recentBookings: s.recentBookings ?? [],
+        });
+        const daily = Array.isArray(a) ? a : a?.daily;
+        setAnalytics(daily ?? []);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -21,7 +40,13 @@ export function DashboardPage() {
 
   if (loading) return <div className="page"><div className="loading-state">Loading dashboard…</div></div>;
   if (error) return <div className="page"><div className="error-banner">{error}</div></div>;
-  if (!stats) return null;
+  if (!stats) {
+    return (
+      <div className="page">
+        <div className="error-banner">Dashboard data is unavailable. Check the API response format.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="page">

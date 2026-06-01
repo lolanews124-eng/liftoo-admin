@@ -21,8 +21,8 @@ export function usePaginatedList<T>(
         if (!params[k]) delete params[k];
       });
       const r = await fetcher(params);
-      setItems(r.items);
-      setTotal(r.total);
+      setItems(r.items ?? []);
+      setTotal(r.total ?? 0);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');
       setItems([]);

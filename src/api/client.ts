@@ -31,7 +31,23 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
       `Request failed (${res.status})`;
     throw new Error(msg);
   }
-  return (json.data ?? json) as T;
+  return parseApiPayload<T>(json);
+}
+
+function parseApiPayload<T>(json: unknown): T {
+  if (json === null || typeof json !== 'object') return json as T;
+
+  const root = json as Record<string, unknown>;
+  let payload: unknown = root.data !== undefined ? root.data : json;
+
+  if (payload !== null && typeof payload === 'object' && !Array.isArray(payload)) {
+    const record = payload as Record<string, unknown>;
+    if (record.stats && typeof record.stats === 'object') {
+      payload = record.stats;
+    }
+  }
+
+  return payload as T;
 }
 
 export const adminApi = {
