@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi, PlatformSettings } from '../api/client';
+import { PageHeader } from '../components/PageHeader';
 
 export function SettingsPage() {
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
@@ -8,7 +9,9 @@ export function SettingsPage() {
 
   const load = () => adminApi.getSettings().then(setSettings).catch((e) => setMessage(e.message));
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const save = async () => {
     if (!settings) return;
@@ -25,13 +28,9 @@ export function SettingsPage() {
     }
   };
 
-  if (!settings) return <div className="page"><p>Loading settings…</p></div>;
+  if (!settings) return <div className="page"><div className="loading-state">Loading settings…</div></div>;
 
-  const field = (
-    label: string,
-    key: keyof PlatformSettings,
-    hint?: string,
-  ) => (
+  const numField = (label: string, key: keyof PlatformSettings, hint?: string) => (
     <label className="field">
       <span>{label}</span>
       <input
@@ -39,32 +38,56 @@ export function SettingsPage() {
         value={settings[key] as number}
         onChange={(e) => setSettings({ ...settings, [key]: Number(e.target.value) })}
       />
-      {hint && <small style={{ color: 'var(--muted)' }}>{hint}</small>}
+      {hint && <small>{hint}</small>}
     </label>
   );
 
   return (
     <div className="page">
-      <h1 className="page-title">Platform Settings</h1>
-      <p className="page-sub">Configure matching, wallet, referrals, and assistant payouts</p>
-      {message && <div className={message.includes('success') ? 'success-banner' : 'error-banner'}>{message}</div>}
+      <PageHeader
+        title="Platform settings"
+        subtitle="Same rules used by customer app, assistant app, and API"
+      />
+      {message && (
+        <div className={message.includes('success') ? 'success-banner' : 'error-banner'}>{message}</div>
+      )}
 
-      <div className="card" style={{ display: 'grid', gap: 16, maxWidth: 520, padding: 24 }}>
-        {field('Matching radius (km)', 'matchRadiusKm', 'How far assistants can receive requests')}
-        {field('New user wallet bonus (₹)', 'signupWalletBonus', 'Credited on first signup')}
-        {field('Referral reward (₹)', 'referralRewardAmount', 'Paid to referrer after first booking')}
-        {field('Assistant earning (%)', 'assistantEarningPercent', 'Percent of service fee paid to assistant')}
-        {field('Requests per batch', 'matchBatchSize', 'Nearby assistants notified at once (e.g. 3)')}
-        {field('Platform fee (%)', 'platformFeePercent', 'Added on top of service fee for customers')}
-        {field('Search timeout (minutes)', 'bookingSearchTimeoutMin', 'Auto-cancel if no assistant found')}
-        {field('Free cancel window (minutes)', 'cancellationFreeBeforeMin', 'Cancel without fee if this many minutes before start')}
-        {field('Late cancel fee (%)', 'cancellationFeePercent', 'Percent of booking total when cancelled late')}
-        {field('Minimum cancel fee (₹)', 'minCancellationFee', 'Minimum charge for late cancellation')}
+      <div className="settings-grid">
+        <div className="card settings-section">
+          <h2 className="card-heading">Matching & search</h2>
+          {numField('Matching radius (km)', 'matchRadiusKm', 'How far assistants receive requests')}
+          {numField('Requests per batch', 'matchBatchSize', 'Assistants notified at once')}
+          {numField('Search timeout (minutes)', 'bookingSearchTimeoutMin', 'Auto-cancel if no assistant')}
+        </div>
 
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
-          {saving ? 'Saving…' : 'Save settings'}
-        </button>
+        <div className="card settings-section">
+          <h2 className="card-heading">Pricing & payouts</h2>
+          {numField('Platform fee (%)', 'platformFeePercent', 'On top of service fee for customers')}
+          {numField('Assistant earning (%)', 'assistantEarningPercent', 'Share of service fee after payment')}
+          {numField(
+            'Min settlement wallet (₹)',
+            'minAssistantSettlementBalance',
+            'Minimum balance before assistant can accept cash jobs (company share debit)',
+          )}
+        </div>
+
+        <div className="card settings-section">
+          <h2 className="card-heading">Wallet & referrals</h2>
+          {numField('Signup wallet bonus (₹)', 'signupWalletBonus')}
+          {numField('Referral reward (₹)', 'referralRewardAmount', 'After referee first paid booking')}
+        </div>
+
+        <div className="card settings-section">
+          <h2 className="card-heading">Cancellation</h2>
+          {numField('Free cancel window (minutes)', 'cancellationFreeBeforeMin')}
+          {numField('Late cancel fee (%)', 'cancellationFeePercent')}
+          {numField('Minimum cancel fee (₹)', 'minCancellationFee')}
+        </div>
       </div>
+
+      <button className="btn btn-primary" style={{ marginTop: 20 }} onClick={save} disabled={saving}>
+        {saving ? 'Saving…' : 'Save all settings'}
+      </button>
     </div>
   );
 }

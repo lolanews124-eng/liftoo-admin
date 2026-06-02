@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi, SupportTicket } from '../api/client';
+import { PageHeader } from '../components/PageHeader';
 
 export function SupportPage() {
   const [items, setItems] = useState<SupportTicket[]>([]);
@@ -21,7 +22,7 @@ export function SupportPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Support Tickets</h1>
+      <PageHeader title="Support tickets" subtitle="Customer help requests from the app" />
       <div className="toolbar">
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           {['open', 'in_progress', 'resolved', 'closed', ''].map((s) => (

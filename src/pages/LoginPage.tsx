@@ -26,23 +26,34 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
-      <form className="login-card" onSubmit={onSubmit}>
-        <div className="login-brand">Liftoo</div>
-        <h1>Admin Panel</h1>
-        <p>Sign in to manage users, bookings, KYC, and platform settings.</p>
-        {error && <div className="error-banner">{error}</div>}
-        <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <div className="login-split">
+        <div className="login-hero">
+          <div className="login-brand">Liftoo</div>
+          <h1>Admin console</h1>
+          <p>Manage bookings, KYC, payments, and platform settings for the customer & assistant apps.</p>
+          <ul className="login-features">
+            <li>Post-completion payment tracking</li>
+            <li>Assistant settlement & cash OTP flow</li>
+            <li>KYC, payouts, promos & support</li>
+          </ul>
         </div>
-        <div className="field">
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-        <button className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-          {loading ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
+        <form className="login-card" onSubmit={onSubmit}>
+          <h2>Sign in</h2>
+          <p className="login-card-sub">Use your admin credentials</p>
+          {error && <div className="error-banner">{error}</div>}
+          <div className="field">
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          </div>
+          <div className="field">
+            <label>Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+          </div>
+          <button className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { adminApi, PaymentRow, EarningRow, RatingRow, AppReviewRow, ReferralRow } from '../api/client';
+import { PageHeader } from '../components/PageHeader';
+import { PaymentStatusBadge } from '../components/StatusBadge';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
 import { downloadCsv } from '../utils/exportCsv';
@@ -29,31 +31,41 @@ function FinanceToolbar({
 
 export function PaymentsPage() {
   const [search, setSearch] = useState('');
-  const [applied, setApplied] = useState('');
-  const filters = useMemo(() => ({ search: applied }), [applied]);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [applied, setApplied] = useState({ search: '', status: '' });
+  const filters = useMemo(() => applied, [applied]);
   const { items, total, page, setPage, loading, error, limit, resetPage } = usePaginatedList<PaymentRow>(adminApi.payments, filters);
+
+  const displayed = items.filter((p) => !applied.status || p.status === applied.status);
 
   return (
     <div className="page">
-      <h1 className="page-title">Payments</h1>
-      <p className="page-sub">All booking payments</p>
+      <PageHeader title="Payments" subtitle="Wallet, UPI, and cash — credited after job completion" />
       {error && <div className="error-banner">{error}</div>}
       <FinanceToolbar
         search={search}
         onSearch={setSearch}
-        onApply={() => { resetPage(); setApplied(search); }}
-        onExport={() => downloadCsv('payments.csv', ['Method', 'Amount', 'Status', 'Venue', 'Date'], items.map((p) => [p.method, p.amount, p.status, p.booking?.venueName ?? '', p.createdAt]))}
+        onApply={() => { resetPage(); setApplied({ search, status: statusFilter }); }}
+        onExport={() => downloadCsv('payments.csv', ['Method', 'Amount', 'Status', 'Venue', 'Date'], displayed.map((p) => [p.method, p.amount, p.status, p.booking?.venueName ?? '', p.createdAt]))}
+        extra={
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="">All statuses</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+        }
       />
       <div className="card table-wrap">
         {loading ? <div className="loading-state">Loading…</div> : (
           <table className="responsive-table">
             <thead><tr><th>Method</th><th>Amount</th><th>Status</th><th>Customer</th><th>Booking</th><th>Date</th></tr></thead>
             <tbody>
-              {items.map((p) => (
+              {displayed.map((p) => (
                 <tr key={p.id}>
-                  <td data-label="Method">{p.method.toUpperCase()}</td>
+                  <td data-label="Method">{p.method?.toUpperCase() ?? '—'}</td>
                   <td data-label="Amount">₹{p.amount}</td>
-                  <td data-label="Status"><span className="badge badge-green">{p.status}</span></td>
+                  <td data-label="Status"><PaymentStatusBadge status={p.status} /></td>
                   <td data-label="Customer">{p.booking?.customer?.name ?? '—'}</td>
                   <td data-label="Booking">{p.booking?.venueName ?? '—'}</td>
                   <td data-label="Date">{new Date(p.createdAt).toLocaleString()}</td>

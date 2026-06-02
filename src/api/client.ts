@@ -157,6 +157,8 @@ export interface DashboardStats {
   users: { total: number; customers: number; assistants: number };
   bookings: { total: number; active: number; completed: number };
   pendingVerifications: number;
+  pendingPayments?: number;
+  openSupportTickets?: number;
   revenue: { total: number; platform: number; pendingPayouts: number };
   recentBookings: BookingRow[];
 }
@@ -227,13 +229,20 @@ export interface BookingRow {
   category?: { name: string };
   customer?: { name: string; phone: string };
   assistant?: { name: string; phone: string } | null;
-  payment?: { method: string; status: string; amount: number } | null;
+  payment?: {
+    method?: string;
+    status: string;
+    amount: number;
+    cashCollectedAt?: string | null;
+  } | null;
 }
 
 export interface BookingDetail extends BookingRow {
   durationMin: number;
   serviceFee: number;
   platformFee: number;
+  assistantEarningAmount?: number;
+  companyShareAmount?: number;
   addressFormatted: string;
   lat?: number;
   lng?: number;
@@ -324,6 +333,7 @@ export interface PlatformSettings {
   cancellationFreeBeforeMin: number;
   cancellationFeePercent: number;
   minCancellationFee: number;
+  minAssistantSettlementBalance: number;
 }
 
 export interface DailyAnalytics {
