@@ -14,7 +14,7 @@ export function NotificationsPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const { items, total, page, setPage, loading, reload, limit } = usePaginatedList<AdminBroadcastRow>(
+  const { items, total, page, setPage, loading, reload, limit, error: listError } = usePaginatedList<AdminBroadcastRow>(
     adminApi.notificationBroadcasts,
     {},
   );
@@ -55,9 +55,10 @@ export function NotificationsPage() {
     <div className="page">
       <PageHeader
         title="Push notifications"
-        subtitle="Send in-app alerts to customer app or assistant app. Users see them instantly if online; otherwise in Notifications."
+        subtitle="Send to customer or assistant app: in-app list + live socket + phone push (when user has FCM token)."
       />
       {error && <div className="error-banner">{error}</div>}
+      {listError && <div className="error-banner">{listError}</div>}
       {message && <div className="success-banner">{message}</div>}
 
       <div className="card settings-section" style={{ marginBottom: 20, maxWidth: 640 }}>
