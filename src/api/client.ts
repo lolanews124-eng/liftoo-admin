@@ -1,3 +1,5 @@
+import { pickPlatformSettingsPayload } from './payloads';
+
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api/v1';
 
 export type ApiResponse<T> = { success: boolean; data: T };
@@ -101,7 +103,10 @@ export const adminApi = {
     api<Paginated<ReferralRow>>(`/admin/referrals?${new URLSearchParams(params ?? {})}`),
   getSettings: () => api<PlatformSettings>('/admin/settings'),
   updateSettings: (body: Partial<PlatformSettings>) =>
-    api<PlatformSettings>('/admin/settings', { method: 'PATCH', body: JSON.stringify(body) }),
+    api<PlatformSettings>('/admin/settings', {
+      method: 'PATCH',
+      body: JSON.stringify(pickPlatformSettingsPayload(body)),
+    }),
   verifyAssistant: (userId: string, verified: boolean) =>
     api(`/admin/assistants/${userId}/verify`, {
       method: 'PATCH',
@@ -135,7 +140,35 @@ export const adminApi = {
     api(`/admin/support/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
   auditLogs: (params?: Record<string, string>) =>
     api<Paginated<AuditLogRow>>(`/admin/audit-logs?${new URLSearchParams(params ?? {})}`),
+  broadcastNotification: (body: { audience: 'customer' | 'assistant'; title: string; body: string }) =>
+    api<BroadcastResult>('/admin/notifications/broadcast', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  notificationBroadcasts: (params?: Record<string, string>) =>
+    api<Paginated<AdminBroadcastRow>>(
+      `/admin/notifications/broadcasts?${new URLSearchParams(params ?? {})}`,
+    ),
 };
+
+export interface BroadcastResult {
+  broadcast: AdminBroadcastRow;
+  audience: 'customer' | 'assistant';
+  targeted: number;
+  sent: number;
+  failed: number;
+}
+
+export interface AdminBroadcastRow {
+  id: string;
+  adminId: string;
+  audience: 'customer' | 'assistant';
+  title: string;
+  body: string;
+  sentCount: number;
+  failCount: number;
+  createdAt: string;
+}
 
 export interface AdminUser {
   id: string;

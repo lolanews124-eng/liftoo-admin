@@ -27,7 +27,11 @@ export function PromosPage() {
     <div className="page">
       <h1 className="page-title">Promo Codes</h1>
       <p className="page-sub">Create discount codes for customers</p>
-      {message && <div className="success-banner">{message}</div>}
+      {message && (
+        <div className={message.includes('created') || message.includes('success') ? 'success-banner' : 'error-banner'}>
+          {message}
+        </div>
+      )}
 
       <div className="card" style={{ padding: 20, marginBottom: 20, maxWidth: 480 }}>
         <h3 style={{ marginTop: 0 }}>New promo</h3>

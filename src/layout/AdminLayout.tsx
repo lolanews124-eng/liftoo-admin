@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
       { to: '/verifications', label: 'KYC', icon: '✅', badgeKey: 'kyc' as const },
       { to: '/rejections', label: 'Rejections', icon: '↩️' },
       { to: '/support', label: 'Support', icon: '💬', badgeKey: 'support' as const },
+      { to: '/notifications', label: 'Notifications', icon: '🔔' },
     ],
   },
   {

@@ -138,13 +138,14 @@ export function EarningsPage() {
 }
 
 export function ReviewsPage() {
-  const { items: ratings, total: t1, page: p1, setPage: setP1, loading: l1, limit } = usePaginatedList<RatingRow>(adminApi.ratings, {});
-  const { items: appReviews, total: t2, page: p2, setPage: setP2, loading: l2 } = usePaginatedList<AppReviewRow>(adminApi.appReviews, {});
+  const { items: ratings, total: t1, page: p1, setPage: setP1, loading: l1, error: err1, limit } = usePaginatedList<RatingRow>(adminApi.ratings, {});
+  const { items: appReviews, total: t2, page: p2, setPage: setP2, loading: l2, error: err2 } = usePaginatedList<AppReviewRow>(adminApi.appReviews, {});
 
   return (
     <div className="page">
       <h1 className="page-title">Reviews</h1>
       <p className="page-sub">Service ratings and app feedback</p>
+      {(err1 || err2) && <div className="error-banner">{err1 || err2}</div>}
       <div className="card" style={{ marginBottom: 20 }}>
         <h2>Service ratings</h2>
         {l1 ? <div className="loading-state">Loading…</div> : (
@@ -193,12 +194,13 @@ export function ReviewsPage() {
 }
 
 export function ReferralsPage() {
-  const { items, total, page, setPage, loading, limit } = usePaginatedList<ReferralRow>(adminApi.referrals, {});
+  const { items, total, page, setPage, loading, error, limit } = usePaginatedList<ReferralRow>(adminApi.referrals, {});
 
   return (
     <div className="page">
       <h1 className="page-title">Referrals</h1>
       <p className="page-sub">Referral activity and rewards</p>
+      {error && <div className="error-banner">{error}</div>}
       <div className="card table-wrap">
         {loading ? <div className="loading-state">Loading…</div> : (
           <table className="responsive-table">

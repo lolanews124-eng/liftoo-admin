@@ -35,6 +35,7 @@ import { PromosPage } from './pages/PromosPage';
 import { PayoutsPage } from './pages/PayoutsPage';
 
 import { SupportPage } from './pages/SupportPage';
+import { NotificationsPage } from './pages/NotificationsPage';
 
 
 
@@ -115,6 +116,8 @@ export default function App() {
             <Route path="payouts" element={<PayoutsPage />} />
 
             <Route path="support" element={<SupportPage />} />
+
+            <Route path="notifications" element={<NotificationsPage />} />
 
           </Route>
 
