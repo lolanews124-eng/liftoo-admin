@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminApi, UserRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
 export function AssistantStatsPage() {
@@ -50,8 +51,7 @@ export function AssistantStatsPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Assistant performance</h1>
-      <p className="page-sub">Ratings, jobs completed, and online status</p>
+      <PageHeader title="Assistant performance" subtitle="Ratings, jobs completed, and online status" />
       {error && <div className="error-banner">{error}</div>}
 
       <div className="grid-4">

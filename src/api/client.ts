@@ -56,6 +56,16 @@ function parseApiPayload<T>(json: unknown): T {
     if (record.stats && typeof record.stats === 'object') {
       payload = record.stats;
     }
+    // Paginated lists: { items, total } or nested { data: { items, total } }
+    if (Array.isArray(record.items)) {
+      return payload as T;
+    }
+    if (record.data && typeof record.data === 'object' && !Array.isArray(record.data)) {
+      const inner = record.data as Record<string, unknown>;
+      if (Array.isArray(inner.items)) {
+        return inner as T;
+      }
+    }
   }
 
   return payload as T;

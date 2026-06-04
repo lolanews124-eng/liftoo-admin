@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Paginated } from '../api/client';
+
+/** Stable empty filters — never pass inline `{}` to usePaginatedList. */
+export const EMPTY_FILTERS: Record<string, string> = {};
 
 export function usePaginatedList<T>(
   fetcher: (params: Record<string, string>) => Promise<Paginated<T>>,
-  filters: Record<string, string> = {},
+  filters: Record<string, string> = EMPTY_FILTERS,
   limit = 20,
 ) {
   const [items, setItems] = useState<T[]>([]);
@@ -12,11 +15,18 @@ export function usePaginatedList<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const filtersKey = useMemo(() => JSON.stringify(filters), [filters]);
+  const filterParams = useMemo(() => ({ ...filters }), [filtersKey]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const params: Record<string, string> = { page: String(page), limit: String(limit), ...filters };
+      const params: Record<string, string> = {
+        page: String(page),
+        limit: String(limit),
+        ...filterParams,
+      };
       Object.keys(params).forEach((k) => {
         if (!params[k]) delete params[k];
       });
@@ -26,10 +36,11 @@ export function usePaginatedList<T>(
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');
       setItems([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [fetcher, filters, page, limit]);
+  }, [fetcher, filterParams, page, limit]);
 
   useEffect(() => {
     load();

@@ -3,7 +3,8 @@ import { adminApi, PaymentRow, EarningRow, RatingRow, AppReviewRow, ReferralRow 
 import { PageHeader } from '../components/PageHeader';
 import { PaymentStatusBadge } from '../components/StatusBadge';
 import { Pagination } from '../components/Pagination';
-import { usePaginatedList } from '../hooks/usePaginatedList';
+import { DataPanel } from '../components/DataPanel';
+import { EMPTY_FILTERS, usePaginatedList } from '../hooks/usePaginatedList';
 import { downloadCsv } from '../utils/exportCsv';
 
 function FinanceToolbar({
@@ -144,88 +145,133 @@ export function EarningsPage() {
 }
 
 export function ReviewsPage() {
-  const { items: ratings, total: t1, page: p1, setPage: setP1, loading: l1, error: err1, limit } = usePaginatedList<RatingRow>(adminApi.ratings, {});
-  const { items: appReviews, total: t2, page: p2, setPage: setP2, loading: l2, error: err2 } = usePaginatedList<AppReviewRow>(adminApi.appReviews, {});
+  const {
+    items: ratings,
+    total: t1,
+    page: p1,
+    setPage: setP1,
+    loading: l1,
+    error: err1,
+    limit,
+    reload: reload1,
+  } = usePaginatedList<RatingRow>(adminApi.ratings, EMPTY_FILTERS);
+  const {
+    items: appReviews,
+    total: t2,
+    page: p2,
+    setPage: setP2,
+    loading: l2,
+    error: err2,
+    reload: reload2,
+  } = usePaginatedList<AppReviewRow>(adminApi.appReviews, EMPTY_FILTERS);
 
   return (
     <div className="page">
-      <h1 className="page-title">Reviews</h1>
-      <p className="page-sub">Service ratings and app feedback</p>
-      {(err1 || err2) && <div className="error-banner">{err1 || err2}</div>}
-      <div className="card" style={{ marginBottom: 20 }}>
-        <h2>Service ratings</h2>
-        {l1 ? <div className="loading-state">Loading…</div> : (
-          <div className="table-wrap">
-            <table className="responsive-table">
-              <thead><tr><th>Stars</th><th>Customer</th><th>Assistant</th><th>Booking</th><th>Comment</th></tr></thead>
-              <tbody>
-                {ratings.map((r) => (
-                  <tr key={r.id}>
-                    <td data-label="Stars">{'★'.repeat(r.stars)}</td>
-                    <td data-label="Customer">{r.customer?.name ?? '—'}</td>
-                    <td data-label="Assistant">{r.assistant?.name ?? '—'}</td>
-                    <td data-label="Booking">{r.booking?.venueName ?? '—'}</td>
-                    <td data-label="Comment">{r.comment ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <Pagination page={p1} total={t1} limit={limit} onChange={setP1} />
-      </div>
-      <div className="card">
-        <h2>App reviews</h2>
-        {l2 ? <div className="loading-state">Loading…</div> : (
-          <div className="table-wrap">
-            <table className="responsive-table">
-              <thead><tr><th>Stars</th><th>User</th><th>Platform</th><th>Comment</th></tr></thead>
-              <tbody>
-                {appReviews.map((r) => (
-                  <tr key={r.id}>
-                    <td data-label="Stars">{'★'.repeat(r.stars)}</td>
-                    <td data-label="User">{r.user?.name ?? '—'}</td>
-                    <td data-label="Platform">{r.platform ?? '—'}</td>
-                    <td data-label="Comment">{r.comment ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <Pagination page={p2} total={t2} limit={limit} onChange={setP2} />
+      <PageHeader title="Reviews" subtitle="Service ratings and app feedback" />
+      <div className="reviews-stack">
+        <div className="card">
+          <h2 className="card-heading">Service ratings</h2>
+          <DataPanel
+            loading={l1}
+            error={err1}
+            empty={!l1 && !err1 && ratings.length === 0}
+            emptyTitle="No service ratings yet"
+            emptyHint="Ratings appear after customers complete bookings."
+            onRetry={reload1}
+          >
+            <div className="table-wrap">
+              <table className="responsive-table">
+                <thead><tr><th>Stars</th><th>Customer</th><th>Assistant</th><th>Booking</th><th>Comment</th></tr></thead>
+                <tbody>
+                  {ratings.map((r) => (
+                    <tr key={r.id}>
+                      <td data-label="Stars">{'★'.repeat(r.stars)}</td>
+                      <td data-label="Customer">{r.customer?.name ?? '—'}</td>
+                      <td data-label="Assistant">{r.assistant?.name ?? '—'}</td>
+                      <td data-label="Booking">{r.booking?.venueName ?? '—'}</td>
+                      <td data-label="Comment">{r.comment ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DataPanel>
+          {!l1 && !err1 && ratings.length > 0 && (
+            <Pagination page={p1} total={t1} limit={limit} onChange={setP1} />
+          )}
+        </div>
+        <div className="card">
+          <h2 className="card-heading">App reviews</h2>
+          <DataPanel
+            loading={l2}
+            error={err2}
+            empty={!l2 && !err2 && appReviews.length === 0}
+            emptyTitle="No app reviews yet"
+            emptyHint="Reviews submitted from the app will show here."
+            onRetry={reload2}
+          >
+            <div className="table-wrap">
+              <table className="responsive-table">
+                <thead><tr><th>Stars</th><th>User</th><th>Platform</th><th>Comment</th></tr></thead>
+                <tbody>
+                  {appReviews.map((r) => (
+                    <tr key={r.id}>
+                      <td data-label="Stars">{'★'.repeat(r.stars)}</td>
+                      <td data-label="User">{r.user?.name ?? '—'}</td>
+                      <td data-label="Platform">{r.platform ?? '—'}</td>
+                      <td data-label="Comment">{r.comment ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DataPanel>
+          {!l2 && !err2 && appReviews.length > 0 && (
+            <Pagination page={p2} total={t2} limit={limit} onChange={setP2} />
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
 export function ReferralsPage() {
-  const { items, total, page, setPage, loading, error, limit } = usePaginatedList<ReferralRow>(adminApi.referrals, {});
+  const { items, total, page, setPage, loading, error, limit, reload } =
+    usePaginatedList<ReferralRow>(adminApi.referrals, EMPTY_FILTERS);
 
   return (
     <div className="page">
-      <h1 className="page-title">Referrals</h1>
-      <p className="page-sub">Referral activity and rewards</p>
-      {error && <div className="error-banner">{error}</div>}
-      <div className="card table-wrap">
-        {loading ? <div className="loading-state">Loading…</div> : (
-          <table className="responsive-table">
-            <thead><tr><th>Code</th><th>Referrer</th><th>Referee</th><th>Reward</th><th>Status</th></tr></thead>
-            <tbody>
-              {items.map((r) => (
-                <tr key={r.id}>
-                  <td data-label="Code">{r.code}</td>
-                  <td data-label="Referrer">{r.referrer?.name ?? '—'}</td>
-                  <td data-label="Referee">{r.referee?.name ?? '—'}</td>
-                  <td data-label="Reward">₹{r.rewardAmount}</td>
-                  <td data-label="Status"><span className="badge badge-green">{r.status}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <PageHeader title="Referrals" subtitle="Referral activity and rewards" />
+      <div className="card">
+        <DataPanel
+          loading={loading}
+          error={error}
+          empty={!loading && !error && items.length === 0}
+          emptyTitle="No referrals yet"
+          emptyHint="When users refer friends, activity will appear here."
+          onRetry={reload}
+        >
+          <div className="table-wrap">
+            <table className="responsive-table">
+              <thead><tr><th>Code</th><th>Referrer</th><th>Referee</th><th>Reward</th><th>Status</th></tr></thead>
+              <tbody>
+                {items.map((r) => (
+                  <tr key={r.id}>
+                    <td data-label="Code">{r.code}</td>
+                    <td data-label="Referrer">{r.referrer?.name ?? '—'}</td>
+                    <td data-label="Referee">{r.referee?.name ?? '—'}</td>
+                    <td data-label="Reward">₹{r.rewardAmount}</td>
+                    <td data-label="Status"><span className="badge badge-green">{r.status}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </DataPanel>
+        {!loading && !error && items.length > 0 && (
+          <Pagination page={page} total={total} limit={limit} onChange={setPage} />
         )}
       </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
     </div>
   );
 }

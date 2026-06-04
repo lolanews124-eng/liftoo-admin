@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { adminApi, AuditLogRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
 export function AuditLogsPage() {
@@ -54,8 +55,7 @@ export function AuditLogsPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Audit logs</h1>
-      <p className="page-sub">Track admin actions across the platform</p>
+      <PageHeader title="Audit logs" subtitle="Track admin actions across the platform" />
       {error && <div className="error-banner">{error}</div>}
 
       <div className="toolbar">
