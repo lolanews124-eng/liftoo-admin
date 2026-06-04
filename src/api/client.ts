@@ -375,17 +375,19 @@ export interface ReferralRow {
 
 export interface PlatformSettings {
   id: string;
-  matchRadiusKm: number;
-  signupWalletBonus: number;
-  referralRewardAmount: number;
-  assistantEarningPercent: number;
-  matchBatchSize: number;
-  platformFeePercent: number;
-  bookingSearchTimeoutMin: number;
-  cancellationFreeBeforeMin: number;
-  cancellationFeePercent: number;
-  minCancellationFee: number;
-  minAssistantSettlementBalance: number;
+  /** False until admin saves settings for the first time — fields are null in API. */
+  configured?: boolean;
+  matchRadiusKm: number | null;
+  signupWalletBonus: number | null;
+  referralRewardAmount: number | null;
+  assistantEarningPercent: number | null;
+  matchBatchSize: number | null;
+  platformFeePercent: number | null;
+  bookingSearchTimeoutMin: number | null;
+  cancellationFreeBeforeMin: number | null;
+  cancellationFeePercent: number | null;
+  minCancellationFee: number | null;
+  minAssistantSettlementBalance: number | null;
 }
 
 export interface DailyAnalytics {
