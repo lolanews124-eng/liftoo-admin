@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { adminApi, adminUploadImage, HomeFeedAd } from '../api/client';
+import { adminApi, adminUploadImage, HomeFeedAd, normalizePublicUploadUrl } from '../api/client';
 import { PageHeader } from '../components/PageHeader';
 
 const emptyForm = () => ({
@@ -74,7 +74,7 @@ export function HomeAdsPage() {
     setEditingId(ad.id);
     setForm({
       title: ad.title ?? '',
-      imageUrl: ad.imageUrl,
+      imageUrl: normalizePublicUploadUrl(ad.imageUrl),
       buttonLabel: ad.buttonLabel ?? '',
       buttonLink: ad.buttonLink ?? '',
       buttonAction: ad.buttonAction === 'route' ? 'route' : 'url',
@@ -90,6 +90,27 @@ export function HomeAdsPage() {
         title="Home feed ads"
         subtitle="Banner below Refer & Earn on the customer app home screen. Only one ad can be live at a time."
       />
+
+      <div className="card home-ad-guidelines">
+        <h2 className="card-heading">Image guidelines</h2>
+        <ul className="guidelines-list">
+          <li>
+            <strong>Recommended size:</strong> 1200 × 500 px (wide banner, 2.4∶1 ratio)
+          </li>
+          <li>
+            <strong>Minimum:</strong> 900 × 375 px — smaller images may look blurry on phones
+          </li>
+          <li>
+            <strong>Format:</strong> JPG or PNG, under 2 MB (max upload 5 MB)
+          </li>
+          <li>
+            <strong>Safe zone:</strong> Keep text and logos in the centre; edges may be cropped on small screens
+          </li>
+          <li>
+            After upload, tick <strong>Live on home feed</strong> and save — only one ad is shown at a time
+          </li>
+        </ul>
+      </div>
       {message && (
         <div
           className={
@@ -135,7 +156,7 @@ export function HomeAdsPage() {
               )}
             </div>
             {form.imageUrl && (
-              <img src={form.imageUrl} alt="Ad preview" className="home-ad-preview" />
+              <img src={normalizePublicUploadUrl(form.imageUrl)} alt="Ad preview" className="home-ad-preview" />
             )}
           </label>
           <label className="field">
@@ -207,7 +228,7 @@ export function HomeAdsPage() {
               items.map((ad) => (
                 <tr key={ad.id}>
                   <td>
-                    <img src={ad.imageUrl} alt="" className="home-ad-thumb" />
+                    <img src={normalizePublicUploadUrl(ad.imageUrl)} alt="" className="home-ad-thumb" />
                   </td>
                   <td>{ad.title || '—'}</td>
                   <td>

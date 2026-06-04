@@ -182,6 +182,21 @@ export const adminApi = {
     api<{ deleted: boolean }>(`/admin/home-feed-ads/${id}`, { method: 'DELETE' }),
 };
 
+/** Rewrites localhost upload URLs to production API so admin preview & app can load images. */
+export function normalizePublicUploadUrl(url: string): string {
+  if (!url) return url;
+  const lower = url.toLowerCase();
+  if (lower.includes('localhost') || lower.includes('127.0.0.1')) {
+    try {
+      const path = new URL(url).pathname;
+      return `https://api.liftoo.in${path}`;
+    } catch {
+      return url;
+    }
+  }
+  return url;
+}
+
 export async function adminUploadImage(file: File): Promise<{ url: string }> {
   const form = new FormData();
   form.append('file', file);
@@ -203,7 +218,7 @@ export async function adminUploadImage(file: File): Promise<{ url: string }> {
     throw new Error(msg);
   }
   const data = parseApiPayload<{ url: string }>(json);
-  return data;
+  return { url: normalizePublicUploadUrl(data.url) };
 }
 
 export interface HomeFeedAd {
