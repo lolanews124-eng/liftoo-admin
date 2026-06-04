@@ -780,6 +780,29 @@ th { color: var(--muted); font-weight: 700; font-size: 12px; text-transform: upp
 }
 .card + .card { margin-top: 16px; }
 .broadcast-form-card { max-width: 640px; margin-bottom: 20px; }
+.home-ad-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 160px;
+  margin-top: 12px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.home-ad-thumb {
+  width: 72px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.muted-small { font-size: 12px; color: var(--muted); }
+.muted-cell { color: var(--muted); text-align: center; padding: 24px !important; }
+.field--checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row !important;
+}
+.field--checkbox input { width: auto; }
 .page-back {
   display: inline-flex;
   align-items: center;

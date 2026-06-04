@@ -37,6 +37,7 @@ const NAV_SECTIONS = [
       { to: '/cities', label: 'Service area', icon: '📍' },
       { to: '/reviews', label: 'Reviews', icon: '★' },
       { to: '/settings', label: 'Settings', icon: '⚙️' },
+      { to: '/home-ads', label: 'Home ads', icon: '📢' },
       { to: '/audit-logs', label: 'Audit logs', icon: '📋' },
     ],
   },

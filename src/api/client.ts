@@ -168,7 +168,56 @@ export const adminApi = {
     api<Paginated<AdminBroadcastRow>>(
       `/admin/notifications/broadcasts?${new URLSearchParams(params ?? {})}`,
     ),
+  homeFeedAds: () => api<HomeFeedAd[]>('/admin/home-feed-ads'),
+  createHomeFeedAd: (body: Partial<HomeFeedAd>) =>
+    api<HomeFeedAd>('/admin/home-feed-ads', { method: 'POST', body: JSON.stringify(body) }),
+  updateHomeFeedAd: (id: string, body: Partial<HomeFeedAd>) =>
+    api<HomeFeedAd>(`/admin/home-feed-ads/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  toggleHomeFeedAd: (id: string, isActive: boolean) =>
+    api<HomeFeedAd>(`/admin/home-feed-ads/${id}/toggle`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    }),
+  deleteHomeFeedAd: (id: string) =>
+    api<{ deleted: boolean }>(`/admin/home-feed-ads/${id}`, { method: 'DELETE' }),
 };
+
+export async function adminUploadImage(file: File): Promise<{ url: string }> {
+  const form = new FormData();
+  form.append('file', file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/upload/file`, {
+    method: 'POST',
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+      'X-Active-Role': 'admin',
+    },
+    body: form,
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg =
+      (json as { error?: { message?: string }; message?: string })?.error?.message ??
+      (json as { message?: string })?.message ??
+      `Upload failed (${res.status})`;
+    throw new Error(msg);
+  }
+  const data = parseApiPayload<{ url: string }>(json);
+  return data;
+}
+
+export interface HomeFeedAd {
+  id: string;
+  title?: string | null;
+  imageUrl: string;
+  buttonLabel?: string | null;
+  buttonLink?: string | null;
+  buttonAction: 'url' | 'route';
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface BroadcastResult {
   broadcast: AdminBroadcastRow;

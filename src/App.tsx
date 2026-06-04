@@ -36,6 +36,7 @@ import { PayoutsPage } from './pages/PayoutsPage';
 
 import { SupportPage } from './pages/SupportPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { HomeAdsPage } from './pages/HomeAdsPage';
 
 
 
@@ -108,6 +109,8 @@ export default function App() {
             <Route path="referrals" element={<ReferralsPage />} />
 
             <Route path="settings" element={<SettingsPage />} />
+
+            <Route path="home-ads" element={<HomeAdsPage />} />
 
             <Route path="rejections" element={<RejectionsPage />} />
 
