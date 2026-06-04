@@ -1,6 +1,7 @@
 import { pickPlatformSettingsPayload } from './payloads';
+import { API_BASE, apiReachabilityHint } from './config';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? '/api/v1';
+export { API_BASE };
 
 export type ApiResponse<T> = { success: boolean; data: T };
 
@@ -22,7 +23,15 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const url = `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, { ...options, headers });
+  } catch {
+    throw new Error(apiReachabilityHint());
+  }
+
   const json = await res.json().catch(() => ({}));
 
   if (!res.ok) {

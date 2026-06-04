@@ -58,7 +58,16 @@ export function NotificationsPage() {
         subtitle="Send to customer or assistant app: in-app list + live socket + phone push (when user has FCM token)."
       />
       {error && <div className="error-banner">{error}</div>}
-      {listError && <div className="error-banner">{listError}</div>}
+      {listError && (
+        <div className="error-banner">
+          {listError}
+          {listError.toLowerCase().includes('cannot reach') && (
+            <p style={{ margin: '8px 0 0', fontSize: 13 }}>
+              Local: run <code>npm run dev</code> in <code>backend</code> (port 5000), then <code>npm run dev</code> in <code>admin</code>.
+            </p>
+          )}
+        </div>
+      )}
       {message && <div className="success-banner">{message}</div>}
 
       <div className="card settings-section" style={{ marginBottom: 20, maxWidth: 640 }}>

@@ -4,7 +4,7 @@ Web admin dashboard for managing users, bookings, KYC, categories, payments, and
 
 ## Prerequisites
 
-- Backend API running at `http://localhost:3000`
+- Backend API running at `http://localhost:5000` (`cd backend && npm run dev`)
 - Node.js 18+
 
 ## Start
