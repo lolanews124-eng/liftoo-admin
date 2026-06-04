@@ -70,17 +70,29 @@ export function NotificationsPage() {
       )}
       {message && <div className="success-banner">{message}</div>}
 
-      <div className="card settings-section" style={{ marginBottom: 20, maxWidth: 640 }}>
+      <div className="card settings-section broadcast-form-card">
         <h2 className="card-heading">New broadcast</h2>
         <form onSubmit={send}>
-          <label className="field">
+          <div className="field">
             <span>Audience</span>
-            <select value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
-              <option value="customer">Customers only (booking app users)</option>
-              <option value="assistant">Assistants only (partner app users)</option>
-            </select>
-            <small>Notifications are stored per user and delivered via realtime socket + in-app list.</small>
-          </label>
+            <div className="segmented" role="group" aria-label="Audience">
+              <button
+                type="button"
+                className={audience === 'customer' ? 'active' : ''}
+                onClick={() => setAudience('customer')}
+              >
+                Customers
+              </button>
+              <button
+                type="button"
+                className={audience === 'assistant' ? 'active' : ''}
+                onClick={() => setAudience('assistant')}
+              >
+                Assistants
+              </button>
+            </div>
+            <small>In-app list, live socket, and push (when FCM token is set).</small>
+          </div>
           <label className="field">
             <span>Title</span>
             <input
@@ -98,12 +110,13 @@ export function NotificationsPage() {
               placeholder="Short message users will read in the app…"
               rows={4}
               maxLength={1000}
-              style={{ width: '100%', resize: 'vertical' }}
             />
           </label>
-          <button type="submit" className="btn btn-primary" disabled={sending}>
-            {sending ? 'Sending…' : audience === 'customer' ? 'Send to all customers' : 'Send to all assistants'}
-          </button>
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary btn-lg" disabled={sending}>
+              {sending ? 'Sending…' : audience === 'customer' ? 'Send to all customers' : 'Send to all assistants'}
+            </button>
+          </div>
         </form>
       </div>
 

@@ -73,8 +73,8 @@ export function UserDetailPage() {
 
   return (
     <div className="page">
-      <Link to="/users" className="btn btn-outline btn-sm" style={{ marginBottom: 16, width: 'auto' }}>
-        ← Users
+      <Link to="/users" className="page-back">
+        ← Back to users
       </Link>
       {error && <div className="error-banner">{error}</div>}
       {msg && <div className="success-banner">{msg}</div>}
@@ -114,9 +114,11 @@ export function UserDetailPage() {
 
       <div className="card" style={{ marginTop: 16 }}>
         <RoleEditor roles={roles} onChange={setRoles} />
-        <button type="button" className="btn btn-primary btn-sm" onClick={saveRoles} disabled={saving} style={{ marginTop: 12 }}>
-          {saving ? 'Saving…' : 'Save roles'}
-        </button>
+        <div className="form-actions form-actions--start">
+          <button type="button" className="btn btn-primary" onClick={saveRoles} disabled={saving}>
+            {saving ? 'Saving…' : 'Save roles'}
+          </button>
+        </div>
       </div>
 
       {addresses.length > 0 && (

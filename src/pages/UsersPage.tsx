@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminApi, UserRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
 export function UsersPage() {
@@ -56,24 +57,36 @@ export function UsersPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Users & assistants</h1>
-      <p className="page-sub">Manage customers and assistants — click a row to view details</p>
+      <PageHeader
+        title="Users & assistants"
+        subtitle="Manage customers and assistants — click a row to view details"
+        action={
+          <Link to="/assistants" className="btn btn-outline">
+            Assistant stats
+          </Link>
+        }
+      />
       {error && <div className="error-banner">{error}</div>}
       <div className="toolbar">
-        <input
-          placeholder="Search name, phone, email…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && apply()}
-        />
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="">All roles</option>
-          <option value="customer">Customer</option>
-          <option value="assistant">Assistant</option>
-        </select>
-        <button type="button" className="btn btn-primary" onClick={apply}>Search</button>
-        <button type="button" className="btn btn-outline" onClick={exportCsv}>Export CSV</button>
-        <Link to="/assistants" className="btn btn-outline">Assistant stats →</Link>
+        <div className="toolbar-field">
+          <input
+            placeholder="Search name, phone, email…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && apply()}
+          />
+        </div>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="">All roles</option>
+            <option value="customer">Customer</option>
+            <option value="assistant">Assistant</option>
+          </select>
+        </div>
+        <div className="toolbar-actions">
+          <button type="button" className="btn btn-primary" onClick={apply}>Search</button>
+          <button type="button" className="btn btn-outline" onClick={exportCsv}>Export CSV</button>
+        </div>
       </div>
 
       <div className="card table-wrap">

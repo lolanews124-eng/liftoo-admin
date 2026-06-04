@@ -78,18 +78,22 @@ export function BookingsPage() {
       />
       {error && <div className="error-banner">{error}</div>}
       <div className="toolbar">
-        <input
-          placeholder="Search venue, customer, phone…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && apply()}
-        />
-        <select value={status} onChange={(e) => setStatus(e.target.value)} disabled={paymentPendingOnly}>
-          <option value="">All statuses</option>
-          {['pending', 'searching', 'assigned', 'arriving', 'started', 'completed', 'cancelled'].map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+        <div className="toolbar-field">
+          <input
+            placeholder="Search venue, customer, phone…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && apply()}
+          />
+        </div>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={status} onChange={(e) => setStatus(e.target.value)} disabled={paymentPendingOnly}>
+            <option value="">All statuses</option>
+            {['pending', 'searching', 'assigned', 'arriving', 'started', 'completed', 'cancelled'].map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
         <label className="filter-check">
           <input
             type="checkbox"
@@ -101,7 +105,9 @@ export function BookingsPage() {
           />
           Payment pending only
         </label>
-        <button type="button" className="btn btn-primary" onClick={apply}>Filter</button>
+        <div className="toolbar-actions">
+          <button type="button" className="btn btn-primary" onClick={apply}>Apply filters</button>
+        </div>
       </div>
 
       <div className="card table-wrap">
@@ -236,17 +242,19 @@ export function BookingsPage() {
               </>
             )}
 
-            <div className="action-row" style={{ marginTop: 20 }}>
-              {selected.status !== 'cancelled' && selected.status !== 'completed' && (
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => updateStatus(selected.id, 'cancelled')}>
-                  Cancel booking
-                </button>
-              )}
-              {selected.status !== 'completed' && selected.status !== 'cancelled' && (
-                <button type="button" className="btn btn-success btn-sm" onClick={() => updateStatus(selected.id, 'completed')}>
-                  Mark completed
-                </button>
-              )}
+            <div className="modal-footer modal-footer--between">
+              <div className="btn-group">
+                {selected.status !== 'cancelled' && selected.status !== 'completed' && (
+                  <button type="button" className="btn btn-danger btn-sm" onClick={() => updateStatus(selected.id, 'cancelled')}>
+                    Cancel booking
+                  </button>
+                )}
+                {selected.status !== 'completed' && selected.status !== 'cancelled' && (
+                  <button type="button" className="btn btn-success btn-sm" onClick={() => updateStatus(selected.id, 'completed')}>
+                    Mark completed
+                  </button>
+                )}
+              </div>
               <button type="button" className="btn btn-outline btn-sm" onClick={() => setSelected(null)}>
                 Close
               </button>

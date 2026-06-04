@@ -127,10 +127,7 @@ export function AdminLayout() {
             </button>
             <div className="topbar-user">
               <div className="topbar-avatar">{(user?.name ?? 'A')[0].toUpperCase()}</div>
-              <div>
-                <strong>{user?.name ?? 'Admin'}</strong>
-                <div className="topbar-email">{user?.email}</div>
-              </div>
+              <strong>{user?.name ?? 'Admin'}</strong>
             </div>
           </div>
           <button

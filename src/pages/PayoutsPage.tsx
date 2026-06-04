@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi, PayoutRequest } from '../api/client';
+import { PageHeader } from '../components/PageHeader';
 
 export function PayoutsPage() {
   const [items, setItems] = useState<PayoutRequest[]>([]);
@@ -18,16 +19,17 @@ export function PayoutsPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Payout Requests</h1>
-      <p className="page-sub">Approve and mark assistant bank payouts</p>
+      <PageHeader title="Payout requests" subtitle="Approve and mark assistant bank payouts" />
       {message && <div className="error-banner">{message}</div>}
       <div className="toolbar">
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">All</option>
-          {['pending', 'approved', 'rejected', 'paid'].map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
+            <option value="">All statuses</option>
+            {['pending', 'approved', 'rejected', 'paid'].map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="table-wrap card">
         <table>
@@ -42,16 +44,18 @@ export function PayoutsPage() {
                 <td>{p.bankAccount ?? '—'} / {p.ifscCode ?? '—'}</td>
                 <td><span className="badge badge-orange">{p.status}</span></td>
                 <td>{new Date(p.createdAt).toLocaleDateString()}</td>
-                <td>
-                  {p.status === 'pending' && (
-                    <>
-                      <button className="btn btn-outline" onClick={() => process(p.id, 'approved')}>Approve</button>{' '}
-                      <button className="btn btn-outline" onClick={() => process(p.id, 'rejected')}>Reject</button>
-                    </>
-                  )}
-                  {p.status === 'approved' && (
-                    <button className="btn btn-primary" onClick={() => process(p.id, 'paid')}>Mark paid</button>
-                  )}
+                <td data-label="Actions">
+                  <div className="action-row">
+                    {p.status === 'pending' && (
+                      <>
+                        <button type="button" className="btn btn-success btn-sm" onClick={() => process(p.id, 'approved')}>Approve</button>
+                        <button type="button" className="btn btn-danger btn-sm" onClick={() => process(p.id, 'rejected')}>Reject</button>
+                      </>
+                    )}
+                    {p.status === 'approved' && (
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => process(p.id, 'paid')}>Mark paid</button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

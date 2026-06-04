@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi, PromoCode } from '../api/client';
+import { PageHeader } from '../components/PageHeader';
 
 export function PromosPage() {
   const [items, setItems] = useState<PromoCode[]>([]);
@@ -25,29 +26,41 @@ export function PromosPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Promo Codes</h1>
-      <p className="page-sub">Create discount codes for customers</p>
+      <PageHeader title="Promo codes" subtitle="Create discount codes for customers at checkout" />
       {message && (
         <div className={message.includes('created') || message.includes('success') ? 'success-banner' : 'error-banner'}>
           {message}
         </div>
       )}
 
-      <div className="card" style={{ padding: 20, marginBottom: 20, maxWidth: 480 }}>
-        <h3 style={{ marginTop: 0 }}>New promo</h3>
-        <div className="toolbar">
-          <input placeholder="CODE" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
-          <select value={discountType} onChange={(e) => setDiscountType(e.target.value as 'fixed' | 'percent')}>
-            <option value="fixed">Fixed ₹</option>
-            <option value="percent">Percent %</option>
-          </select>
-          <input type="number" value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} />
-          <button className="btn btn-primary" onClick={create}>Create</button>
+      <div className="card broadcast-form-card">
+        <h2 className="card-heading">New promo</h2>
+        <div className="form-grid-2">
+          <label className="field">
+            <span>Code</span>
+            <input placeholder="SUMMER50" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+          </label>
+          <label className="field">
+            <span>Discount type</span>
+            <select value={discountType} onChange={(e) => setDiscountType(e.target.value as 'fixed' | 'percent')}>
+              <option value="fixed">Fixed amount (₹)</option>
+              <option value="percent">Percentage (%)</option>
+            </select>
+          </label>
+          <label className="field">
+            <span>Value</span>
+            <input type="number" min={1} value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} />
+          </label>
+        </div>
+        <div className="form-actions form-actions--start">
+          <button type="button" className="btn btn-primary" onClick={create} disabled={!code.trim()}>
+            Create promo
+          </button>
         </div>
       </div>
 
       <div className="table-wrap card">
-        <table>
+        <table className="responsive-table">
           <thead>
             <tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Active</th><th></th></tr>
           </thead>
@@ -59,8 +72,8 @@ export function PromosPage() {
                 <td>{p.discountType === 'fixed' ? `₹${p.discountValue}` : `${p.discountValue}%`}</td>
                 <td>{p.usedCount}{p.maxUses ? ` / ${p.maxUses}` : ''}</td>
                 <td>{p.isActive ? 'Yes' : 'No'}</td>
-                <td>
-                  <button className="btn btn-outline" onClick={() => adminApi.togglePromo(p.id, !p.isActive).then(load)}>
+                <td data-label="Actions">
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => adminApi.togglePromo(p.id, !p.isActive).then(load)}>
                     {p.isActive ? 'Disable' : 'Enable'}
                   </button>
                 </td>

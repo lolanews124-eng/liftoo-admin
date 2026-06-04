@@ -24,11 +24,13 @@ export function SupportPage() {
     <div className="page">
       <PageHeader title="Support tickets" subtitle="Customer help requests from the app" />
       <div className="toolbar">
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          {['open', 'in_progress', 'resolved', 'closed', ''].map((s) => (
-            <option key={s} value={s}>{s || 'All'}</option>
-          ))}
-        </select>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
+            {['open', 'in_progress', 'resolved', 'closed', ''].map((s) => (
+              <option key={s} value={s}>{s ? s.replace('_', ' ') : 'All statuses'}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="table-wrap card">
         <table>
@@ -50,11 +52,21 @@ export function SupportPage() {
       </div>
 
       {selected && (
-        <div className="card" style={{ marginTop: 20, padding: 20 }}>
-          <h3>{selected.subject}</h3>
-          <p>{selected.message}</p>
-          <textarea rows={4} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Admin reply" style={{ width: '100%' }} />
-          <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={save}>Reply & resolve</button>
+        <div className="card" style={{ marginTop: 20 }}>
+          <h2 className="card-heading">{selected.subject}</h2>
+          <p style={{ margin: '0 0 16px', lineHeight: 1.5 }}>{selected.message}</p>
+          <label className="field">
+            <span>Admin reply</span>
+            <textarea rows={4} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Write your reply to the customer…" />
+          </label>
+          <div className="form-actions">
+            <button type="button" className="btn btn-outline" onClick={() => { setSelected(null); setReply(''); }}>
+              Cancel
+            </button>
+            <button type="button" className="btn btn-primary" onClick={save} disabled={!reply.trim()}>
+              Reply & resolve
+            </button>
+          </div>
         </div>
       )}
     </div>

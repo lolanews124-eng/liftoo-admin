@@ -85,9 +85,12 @@ export function SettingsPage() {
         </div>
       </div>
 
-      <button className="btn btn-primary" style={{ marginTop: 20 }} onClick={save} disabled={saving}>
-        {saving ? 'Saving…' : 'Save all settings'}
-      </button>
+      <div className="sticky-actions">
+        <p className="hint">Changes apply to customer app, assistant app, and API immediately after save.</p>
+        <button type="button" className="btn btn-primary btn-lg" onClick={save} disabled={saving}>
+          {saving ? 'Saving…' : 'Save all settings'}
+        </button>
+      </div>
     </div>
   );
 }

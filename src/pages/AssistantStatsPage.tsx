@@ -62,20 +62,26 @@ export function AssistantStatsPage() {
       </div>
 
       <div className="toolbar">
-        <input placeholder="Search name or phone" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
-          <option value="jobs">Sort: most jobs</option>
-          <option value="rating">Sort: highest rating</option>
-          <option value="newest">Sort: newest</option>
-        </select>
+        <div className="toolbar-field">
+          <input placeholder="Search name or phone" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
+            <option value="jobs">Sort: most jobs</option>
+            <option value="rating">Sort: highest rating</option>
+            <option value="newest">Sort: newest</option>
+          </select>
+        </div>
         <label className="filter-check">
           <input type="checkbox" checked={onlineOnly} onChange={(e) => setOnlineOnly(e.target.checked)} /> Online only
         </label>
         <label className="filter-check">
           <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} /> Verified only
         </label>
-        <button type="button" className="btn btn-primary" onClick={() => { setPage(1); reload(); }}>Search</button>
-        <button type="button" className="btn btn-outline" onClick={exportCsv}>Export CSV</button>
+        <div className="toolbar-actions">
+          <button type="button" className="btn btn-primary" onClick={() => { setPage(1); reload(); }}>Search</button>
+          <button type="button" className="btn btn-outline" onClick={exportCsv}>Export CSV</button>
+        </div>
       </div>
 
       <div className="card table-wrap">

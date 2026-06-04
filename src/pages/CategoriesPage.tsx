@@ -236,11 +236,11 @@ export function CategoriesPage() {
               <div>Assistant earns ~₹{assistantShare(editForm.baseRate)} ({settings?.assistantEarningPercent ?? 80}%)</div>
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn btn-primary" onClick={saveEdit} disabled={saving}>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={saveEdit} disabled={saving}>
                 {saving ? 'Saving…' : 'Save price'}
               </button>
-              <button className="btn btn-outline" onClick={() => setEditing(null)}>Cancel</button>
             </div>
           </div>
         </div>

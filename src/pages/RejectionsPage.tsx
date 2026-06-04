@@ -13,6 +13,7 @@ export function RejectionsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       <div className="toolbar">
+        <div className="toolbar-actions">
         <button
           type="button"
           className="btn btn-outline"
@@ -33,6 +34,7 @@ export function RejectionsPage() {
         >
           Export CSV
         </button>
+        </div>
       </div>
 
       <div className="card table-wrap">

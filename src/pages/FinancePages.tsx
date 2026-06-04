@@ -21,10 +21,14 @@ function FinanceToolbar({
 }) {
   return (
     <div className="toolbar">
-      <input placeholder="Search…" value={search} onChange={(e) => onSearch(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && onApply()} />
+      <div className="toolbar-field">
+        <input placeholder="Search…" value={search} onChange={(e) => onSearch(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && onApply()} />
+      </div>
       {extra}
-      <button type="button" className="btn btn-primary" onClick={onApply}>Search</button>
-      <button type="button" className="btn btn-outline" onClick={onExport}>Export CSV</button>
+      <div className="toolbar-actions">
+        <button type="button" className="btn btn-primary" onClick={onApply}>Search</button>
+        <button type="button" className="btn btn-outline" onClick={onExport}>Export CSV</button>
+      </div>
     </div>
   );
 }
@@ -48,12 +52,14 @@ export function PaymentsPage() {
         onApply={() => { resetPage(); setApplied({ search, status: statusFilter }); }}
         onExport={() => downloadCsv('payments.csv', ['Method', 'Amount', 'Status', 'Venue', 'Date'], displayed.map((p) => [p.method, p.amount, p.status, p.booking?.venueName ?? '', p.createdAt]))}
         extra={
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">All statuses</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-          </select>
+          <div className="toolbar-field toolbar-field--narrow">
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <option value="">All statuses</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
         }
       />
       <div className="card table-wrap">

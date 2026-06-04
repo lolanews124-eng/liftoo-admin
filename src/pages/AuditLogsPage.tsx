@@ -59,21 +59,29 @@ export function AuditLogsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       <div className="toolbar">
-        <input placeholder="Search action, entity, ID…" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)}>
-          <option value="">All actions</option>
-          {actions.map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </select>
-        <select value={entityFilter} onChange={(e) => setEntityFilter(e.target.value)}>
-          <option value="">All entities</option>
-          {entities.map((e) => (
-            <option key={e} value={e}>{e}</option>
-          ))}
-        </select>
-        <button type="button" className="btn btn-primary" onClick={() => { setPage(1); reload(); }}>Apply</button>
-        <button type="button" className="btn btn-outline" onClick={exportPage}>Export page CSV</button>
+        <div className="toolbar-field">
+          <input placeholder="Search action, entity, ID…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)}>
+            <option value="">All actions</option>
+            {actions.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
+        <div className="toolbar-field toolbar-field--narrow">
+          <select value={entityFilter} onChange={(e) => setEntityFilter(e.target.value)}>
+            <option value="">All entities</option>
+            {entities.map((e) => (
+              <option key={e} value={e}>{e}</option>
+            ))}
+          </select>
+        </div>
+        <div className="toolbar-actions">
+          <button type="button" className="btn btn-primary" onClick={() => { setPage(1); reload(); }}>Apply</button>
+          <button type="button" className="btn btn-outline" onClick={exportPage}>Export page CSV</button>
+        </div>
       </div>
 
       <div className="card table-wrap">
