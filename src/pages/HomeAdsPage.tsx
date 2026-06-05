@@ -81,7 +81,7 @@ export function HomeAdsPage() {
       sortOrder: ad.sortOrder,
       isActive: ad.isActive,
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.home-ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -93,24 +93,25 @@ export function HomeAdsPage() {
 
       <div className="card home-ad-guidelines">
         <h2 className="card-heading">Image guidelines</h2>
-        <ul className="guidelines-list">
+        <ul className="guidelines-list guidelines-list--inline">
           <li>
-            <strong>Recommended size:</strong> 1200 × 500 px (wide banner, 2.4∶1 ratio)
+            <strong>Recommended:</strong> 1200 × 500 px (2.4∶1)
           </li>
           <li>
-            <strong>Minimum:</strong> 900 × 375 px — smaller images may look blurry on phones
+            <strong>Minimum:</strong> 900 × 375 px
           </li>
           <li>
-            <strong>Format:</strong> JPG or PNG, under 2 MB (max upload 5 MB)
+            <strong>Format:</strong> JPG/PNG under 2 MB
           </li>
           <li>
-            <strong>Safe zone:</strong> Title and button appear as overlay on the bottom of the image — keep the lower third clear of important artwork
+            <strong>Safe zone:</strong> Keep lower third clear for title + button overlay
           </li>
           <li>
-            After upload, tick <strong>Live on home feed</strong> — you can have up to 5 live ads; lower sort order appears first
+            Up to <strong>5 live ads</strong> — lower sort order appears first
           </li>
         </ul>
       </div>
+
       {message && (
         <div
           className={
@@ -123,152 +124,159 @@ export function HomeAdsPage() {
         </div>
       )}
 
-      <div className="card broadcast-form-card">
-        <h2 className="card-heading">{editingId ? 'Edit ad' : 'New ad'}</h2>
-        <div className="form-grid-2">
-          <label className="field">
-            <span>Title (optional)</span>
-            <input
-              placeholder="Summer sale"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-            />
-          </label>
-          <label className="field">
-            <span>Sort order</span>
-            <input
-              type="number"
-              value={form.sortOrder}
-              onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })}
-            />
-          </label>
-          <label className="field field--full">
-            <span>Banner image</span>
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onPickImage(e.target.files?.[0])} />
-            <div className="form-actions form-actions--start">
-              <button type="button" className="btn btn-outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
-                {uploading ? 'Uploading…' : 'Upload image'}
-              </button>
+      <div className="home-ads-layout">
+        <div className="card home-ad-form broadcast-form-card">
+          <h2 className="card-heading">{editingId ? 'Edit ad' : 'New ad'}</h2>
+          <div className="form-grid-2 home-ad-form-grid">
+            <label className="field">
+              <span>Title (optional)</span>
+              <input
+                placeholder="Summer sale"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span>Sort order</span>
+              <input
+                type="number"
+                value={form.sortOrder}
+                onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })}
+              />
+            </label>
+            <label className="field field--full">
+              <span>Banner image</span>
+              <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onPickImage(e.target.files?.[0])} />
+              <div className="form-actions form-actions--start">
+                <button type="button" className="btn btn-outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                  {uploading ? 'Uploading…' : 'Upload image'}
+                </button>
+                {form.imageUrl && (
+                  <a href={form.imageUrl} target="_blank" rel="noreferrer" className="muted-link">
+                    Preview URL
+                  </a>
+                )}
+              </div>
               {form.imageUrl && (
-                <a href={form.imageUrl} target="_blank" rel="noreferrer" className="muted-link">
-                  Preview URL
-                </a>
+                <img src={normalizePublicUploadUrl(form.imageUrl)} alt="Ad preview" className="home-ad-preview" />
               )}
-            </div>
-            {form.imageUrl && (
-              <img src={normalizePublicUploadUrl(form.imageUrl)} alt="Ad preview" className="home-ad-preview" />
-            )}
-          </label>
-          <label className="field">
-            <span>Button label</span>
-            <input
-              placeholder="Shop now"
-              value={form.buttonLabel}
-              onChange={(e) => setForm({ ...form, buttonLabel: e.target.value })}
-            />
-          </label>
-          <label className="field">
-            <span>Button action</span>
-            <select
-              value={form.buttonAction}
-              onChange={(e) => setForm({ ...form, buttonAction: e.target.value as 'url' | 'route' })}
-            >
-              <option value="url">Open URL (browser)</option>
-              <option value="route">App route (e.g. /referral)</option>
-            </select>
-          </label>
-          <label className="field field--full">
-            <span>Button link</span>
-            <input
-              placeholder={form.buttonAction === 'route' ? '/referral' : 'https://liftoo.in'}
-              value={form.buttonLink}
-              onChange={(e) => setForm({ ...form, buttonLink: e.target.value })}
-            />
-          </label>
-          <label className="field field--checkbox">
-            <input
-              type="checkbox"
-              checked={form.isActive}
-              onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-            />
-            <span>Live on home feed (shown in auto-sliding carousel)</span>
-          </label>
-        </div>
-        <div className="form-actions form-actions--start">
-          <button type="button" className="btn btn-primary" onClick={save}>
-            {editingId ? 'Save changes' : 'Create ad'}
-          </button>
-          {editingId && (
-            <button type="button" className="btn btn-outline" onClick={resetForm}>
-              Cancel edit
+            </label>
+            <label className="field">
+              <span>Button label</span>
+              <input
+                placeholder="Shop now"
+                value={form.buttonLabel}
+                onChange={(e) => setForm({ ...form, buttonLabel: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span>Button action</span>
+              <select
+                value={form.buttonAction}
+                onChange={(e) => setForm({ ...form, buttonAction: e.target.value as 'url' | 'route' })}
+              >
+                <option value="url">Open URL (browser)</option>
+                <option value="route">App route (e.g. /referral)</option>
+              </select>
+            </label>
+            <label className="field field--full">
+              <span>Button link</span>
+              <input
+                placeholder={form.buttonAction === 'route' ? '/referral' : 'https://liftoo.in'}
+                value={form.buttonLink}
+                onChange={(e) => setForm({ ...form, buttonLink: e.target.value })}
+              />
+            </label>
+            <label className="field field--checkbox field--full">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+              />
+              <span>Live on home feed (shown in auto-sliding carousel)</span>
+            </label>
+          </div>
+          <div className="form-actions form-actions--start">
+            <button type="button" className="btn btn-primary" onClick={save}>
+              {editingId ? 'Save changes' : 'Create ad'}
             </button>
-          )}
-        </div>
-      </div>
-
-      <div className="table-wrap card">
-        <table className="responsive-table">
-          <thead>
-            <tr>
-              <th>Preview</th>
-              <th>Title</th>
-              <th>Button</th>
-              <th>Live</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="muted-cell">
-                  No ads yet
-                </td>
-              </tr>
-            ) : (
-              items.map((ad) => (
-                <tr key={ad.id}>
-                  <td>
-                    <img src={normalizePublicUploadUrl(ad.imageUrl)} alt="" className="home-ad-thumb" />
-                  </td>
-                  <td>{ad.title || '—'}</td>
-                  <td>
-                    {ad.buttonLabel ? (
-                      <>
-                        <strong>{ad.buttonLabel}</strong>
-                        <br />
-                        <span className="muted-small">{ad.buttonLink}</span>
-                      </>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td>{ad.isActive ? 'Yes' : 'No'}</td>
-                  <td data-label="Actions" className="actions-cell">
-                    <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(ad)}>
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-sm"
-                      onClick={() => adminApi.toggleHomeFeedAd(ad.id, !ad.isActive).then(load)}
-                    >
-                      {ad.isActive ? 'Deactivate' : 'Go live'}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-sm btn-danger"
-                      onClick={() => {
-                        if (confirm('Delete this ad?')) adminApi.deleteHomeFeedAd(ad.id).then(load);
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
+            {editingId && (
+              <button type="button" className="btn btn-outline" onClick={resetForm}>
+                Cancel edit
+              </button>
             )}
-          </tbody>
-        </table>
+          </div>
+        </div>
+
+        <div className="list-panel home-ads-list">
+          <h2 className="card-heading card-table-title">All ads ({items.length})</h2>
+          <div className="table-wrap">
+            <table className="responsive-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Title</th>
+                  <th>Button</th>
+                  <th>Live</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="muted-cell">
+                      No ads yet — create one using the form
+                    </td>
+                  </tr>
+                ) : (
+                  items.map((ad) => (
+                    <tr key={ad.id}>
+                      <td data-label="Preview">
+                        <img src={normalizePublicUploadUrl(ad.imageUrl)} alt="" className="home-ad-thumb" />
+                      </td>
+                      <td data-label="Title">{ad.title || '—'}</td>
+                      <td data-label="Button">
+                        {ad.buttonLabel ? (
+                          <>
+                            <strong>{ad.buttonLabel}</strong>
+                            <br />
+                            <span className="muted-small">{ad.buttonLink}</span>
+                          </>
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                      <td data-label="Live">
+                        {ad.isActive ? <span className="badge badge-green">Live</span> : <span className="badge badge-gray">Off</span>}
+                      </td>
+                      <td data-label="Actions" className="actions-cell">
+                        <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(ad)}>
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm"
+                          onClick={() => adminApi.toggleHomeFeedAd(ad.id, !ad.isActive).then(load)}
+                        >
+                          {ad.isActive ? 'Deactivate' : 'Go live'}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm btn-danger"
+                          onClick={() => {
+                            if (confirm('Delete this ad?')) adminApi.deleteHomeFeedAd(ad.id).then(load);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
