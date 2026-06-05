@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminApi, UserRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
@@ -84,48 +85,53 @@ export function AssistantStatsPage() {
         </div>
       </div>
 
-      <div className="card table-wrap">
+      <ListPanel
+        footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}
+      >
         {loading ? (
           <div className="loading-state">Loading assistants…</div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Assistant</th>
-                <th>Code</th>
-                <th>Rating</th>
-                <th>Jobs</th>
-                <th>Status</th>
-                <th>Wallet</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map((u) => (
-                <tr key={u.id}>
-                  <td data-label="Assistant">
-                    <strong>{u.name ?? '—'}</strong>
-                    <div className="cell-sub">{u.phone}</div>
-                  </td>
-                  <td data-label="Code">{u.assistantCode ?? '—'}</td>
-                  <td data-label="Rating">★ {(u.rating ?? 0).toFixed(1)}</td>
-                  <td data-label="Jobs">{u.totalJobs ?? 0}</td>
-                  <td data-label="Status">
-                    {u.isOnline && <span className="badge badge-green">Online</span>}
-                    {u.adminVerified ? <span className="badge badge-green">Verified</span> : <span className="badge badge-orange">Pending</span>}
-                    {u.isSuspended && <span className="badge badge-red">Suspended</span>}
-                  </td>
-                  <td data-label="Wallet">₹{u.walletBalance}</td>
-                  <td>
-                    <Link to={`/users/${u.id}`} className="btn btn-outline btn-sm">View</Link>
-                  </td>
+          <div className="table-wrap">
+            <table className="responsive-table">
+              <thead>
+                <tr>
+                  <th>Assistant</th>
+                  <th>Code</th>
+                  <th>Rating</th>
+                  <th>Jobs</th>
+                  <th>Status</th>
+                  <th>Wallet</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sorted.map((u) => (
+                  <tr key={u.id}>
+                    <td data-label="Assistant">
+                      <strong>{u.name ?? '—'}</strong>
+                      <div className="cell-sub">{u.phone}</div>
+                    </td>
+                    <td data-label="Code">{u.assistantCode ?? '—'}</td>
+                    <td data-label="Rating">★ {(u.rating ?? 0).toFixed(1)}</td>
+                    <td data-label="Jobs">{u.totalJobs ?? 0}</td>
+                    <td data-label="Status">
+                      <div className="badge-row">
+                        {u.isOnline && <span className="badge badge-green">Online</span>}
+                        {u.adminVerified ? <span className="badge badge-green">Verified</span> : <span className="badge badge-orange">Pending</span>}
+                        {u.isSuspended && <span className="badge badge-red">Suspended</span>}
+                      </div>
+                    </td>
+                    <td data-label="Wallet">₹{u.walletBalance}</td>
+                    <td>
+                      <Link to={`/users/${u.id}`} className="btn btn-outline btn-sm">View</Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
     </div>
   );
 }

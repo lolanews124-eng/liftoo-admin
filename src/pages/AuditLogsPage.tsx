@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { adminApi, AuditLogRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
@@ -84,13 +85,14 @@ export function AuditLogsPage() {
         </div>
       </div>
 
-      <div className="card table-wrap">
+      <ListPanel footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}>
         {loading ? (
           <div className="loading-state">Loading audit logs…</div>
         ) : filtered.length === 0 ? (
           <div className="empty-state-inline">No audit logs found</div>
         ) : (
-          <table>
+          <div className="table-wrap">
+          <table className="responsive-table">
             <thead>
               <tr><th>When</th><th>Action</th><th>Entity</th><th>Entity ID</th><th>Details</th></tr>
             </thead>
@@ -112,9 +114,9 @@ export function AuditLogsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
     </div>
   );
 }

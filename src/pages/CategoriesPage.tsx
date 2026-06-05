@@ -102,7 +102,7 @@ export function CategoriesPage() {
       {error && <div className="error-banner">{error}</div>}
       {message && <div className="success-banner">{message}</div>}
 
-      <form className="card" onSubmit={create} style={{ marginBottom: 16, padding: 24 }}>
+      <form className="card" onSubmit={create}>
         <h3 style={{ marginTop: 0 }}>Add new category</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
           <div className="field">
@@ -140,8 +140,9 @@ export function CategoriesPage() {
         <button className="btn btn-primary" disabled={saving}>Create category</button>
       </form>
 
-      <div className="card table-wrap">
-        <table>
+      <div className="list-panel">
+        <div className="table-wrap">
+        <table className="responsive-table">
           <thead>
             <tr>
               <th>Category</th>
@@ -190,6 +191,7 @@ export function CategoriesPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {editing && (

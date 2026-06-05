@@ -122,13 +122,9 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {analytics.length > 0 && (
-        <div style={{ marginTop: 20 }}>
-          <AnalyticsCharts daily={analytics} />
-        </div>
-      )}
+      {analytics.length > 0 && <AnalyticsCharts daily={analytics} />}
 
-      <div className="grid-2" style={{ marginTop: 20 }}>
+      <div className="grid-2">
         <div className="card">
           <h2 className="card-heading">Quick actions</h2>
           <div className="quick-links">
@@ -149,8 +145,8 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 20 }}>
-        <h2 className="card-heading">Recent bookings</h2>
+      <div className="card card--table">
+        <h2 className="card-heading card-table-title">Recent bookings</h2>
         <div className="table-wrap">
           <table className="responsive-table">
             <thead>

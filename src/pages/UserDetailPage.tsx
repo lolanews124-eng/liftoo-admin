@@ -102,7 +102,7 @@ export function UserDetailPage() {
         </div>
       </div>
 
-      <div className="grid-3" style={{ marginTop: 16 }}>
+      <div className="grid-3">
         <div className="card stat-card"><h3>Wallet</h3><p>₹{wallet?.balance ?? 0}</p></div>
         {ap && (
           <>
@@ -112,7 +112,7 @@ export function UserDetailPage() {
         )}
       </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
+      <div className="card">
         <RoleEditor roles={roles} onChange={setRoles} />
         <div className="form-actions form-actions--start">
           <button type="button" className="btn btn-primary" onClick={saveRoles} disabled={saving}>
@@ -131,8 +131,8 @@ export function UserDetailPage() {
       )}
 
       {wallet?.transactions && wallet.transactions.length > 0 && (
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3>Recent wallet transactions</h3>
+        <div className="card card--table">
+          <h3 className="card-heading card-table-title">Recent wallet transactions</h3>
           <div className="table-wrap">
             <table>
               <thead><tr><th>Type</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
@@ -152,10 +152,10 @@ export function UserDetailPage() {
       )}
 
       {(bookingsCustomer.length > 0 || bookingsAssistant.length > 0) && (
-        <div className="grid-2" style={{ marginTop: 16 }}>
+        <div className="grid-2">
           {bookingsCustomer.length > 0 && (
-            <div className="card">
-              <h3>Bookings as customer</h3>
+            <div className="card card--table">
+              <h3 className="card-heading card-table-title">Bookings as customer</h3>
               <div className="table-wrap">
                 <table>
                   <thead><tr><th>Service</th><th>Status</th><th>Amount</th></tr></thead>
@@ -173,8 +173,8 @@ export function UserDetailPage() {
             </div>
           )}
           {bookingsAssistant.length > 0 && (
-            <div className="card">
-              <h3>Bookings as assistant</h3>
+            <div className="card card--table">
+              <h3 className="card-heading card-table-title">Bookings as assistant</h3>
               <div className="table-wrap">
                 <table>
                   <thead><tr><th>Service</th><th>Customer</th><th>Status</th></tr></thead>

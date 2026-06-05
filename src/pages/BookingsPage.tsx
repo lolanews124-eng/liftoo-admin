@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminApi, BookingDetail, BookingRow } from '../api/client';
+import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
 import { BookingStatusBadge, PaymentStatusBadge } from '../components/StatusBadge';
@@ -110,12 +111,13 @@ export function BookingsPage() {
         </div>
       </div>
 
-      <div className="card table-wrap">
+      <ListPanel footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}>
         {loading ? (
           <div className="loading-state">Loading bookings…</div>
         ) : items.length === 0 ? (
           <div className="empty-state-inline">No bookings found</div>
         ) : (
+          <div className="table-wrap">
           <table className="responsive-table">
             <thead>
               <tr>
@@ -158,9 +160,9 @@ export function BookingsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
 
       {selected && (
         <div className="modal-backdrop" onClick={() => setSelected(null)}>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminApi, UserRow } from '../api/client';
 import { Pagination } from '../components/Pagination';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
 
@@ -89,12 +90,13 @@ export function UsersPage() {
         </div>
       </div>
 
-      <div className="card table-wrap">
+      <ListPanel footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}>
         {loading ? (
           <div className="loading-state">Loading users…</div>
         ) : items.length === 0 ? (
           <div className="empty-state-inline">No users match your filters</div>
         ) : (
+          <div className="table-wrap">
           <table className="responsive-table">
             <thead>
               <tr>
@@ -147,9 +149,9 @@ export function UsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
     </div>
   );
 }

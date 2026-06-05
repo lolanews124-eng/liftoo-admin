@@ -39,7 +39,7 @@ export function RejectionsPage() {
         }
       />
 
-      <div className="card">
+      <div className="list-panel">
         <DataPanel
           loading={loading}
           error={error}
@@ -76,7 +76,9 @@ export function RejectionsPage() {
           </div>
         </DataPanel>
         {!loading && !error && items.length > 0 && (
-          <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+          <div className="list-panel-footer">
+            <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+          </div>
         )}
       </div>
     </div>

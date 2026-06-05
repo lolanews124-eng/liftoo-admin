@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { adminApi, PaymentRow, EarningRow, RatingRow, AppReviewRow, ReferralRow } from '../api/client';
+import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { PaymentStatusBadge } from '../components/StatusBadge';
 import { Pagination } from '../components/Pagination';
@@ -63,26 +64,27 @@ export function PaymentsPage() {
           </div>
         }
       />
-      <div className="card table-wrap">
+      <ListPanel footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}>
         {loading ? <div className="loading-state">Loading…</div> : (
-          <table className="responsive-table">
-            <thead><tr><th>Method</th><th>Amount</th><th>Status</th><th>Customer</th><th>Booking</th><th>Date</th></tr></thead>
-            <tbody>
-              {displayed.map((p) => (
-                <tr key={p.id}>
-                  <td data-label="Method">{p.method?.toUpperCase() ?? '—'}</td>
-                  <td data-label="Amount">₹{p.amount}</td>
-                  <td data-label="Status"><PaymentStatusBadge status={p.status} /></td>
-                  <td data-label="Customer">{p.booking?.customer?.name ?? '—'}</td>
-                  <td data-label="Booking">{p.booking?.venueName ?? '—'}</td>
-                  <td data-label="Date">{new Date(p.createdAt).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-wrap">
+            <table className="responsive-table">
+              <thead><tr><th>Method</th><th>Amount</th><th>Status</th><th>Customer</th><th>Booking</th><th>Date</th></tr></thead>
+              <tbody>
+                {displayed.map((p) => (
+                  <tr key={p.id}>
+                    <td data-label="Method">{p.method?.toUpperCase() ?? '—'}</td>
+                    <td data-label="Amount">₹{p.amount}</td>
+                    <td data-label="Status"><PaymentStatusBadge status={p.status} /></td>
+                    <td data-label="Customer">{p.booking?.customer?.name ?? '—'}</td>
+                    <td data-label="Booking">{p.booking?.venueName ?? '—'}</td>
+                    <td data-label="Date">{new Date(p.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
     </div>
   );
 }
@@ -101,8 +103,7 @@ export function EarningsPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">Assistant earnings</h1>
-      <p className="page-sub">Track payouts to assistants</p>
+      <PageHeader title="Assistant earnings" subtitle="Track payouts to assistants" />
       {error && <div className="error-banner">{error}</div>}
       <FinanceToolbar
         search={search}
@@ -110,36 +111,39 @@ export function EarningsPage() {
         onApply={() => { resetPage(); reload(); }}
         onExport={() => downloadCsv('earnings.csv', ['Assistant', 'Amount', 'Description', 'Paid'], filtered.map((e) => [e.assistant?.name ?? '', e.amount, e.description, e.isPaidOut ? 'yes' : 'no']))}
         extra={
-          <select value={paidFilter} onChange={(e) => setPaidFilter(e.target.value)}>
-            <option value="">All</option>
-            <option value="pending">Pending payout</option>
-            <option value="paid">Paid out</option>
-          </select>
+          <div className="toolbar-field toolbar-field--narrow">
+            <select value={paidFilter} onChange={(e) => setPaidFilter(e.target.value)}>
+              <option value="">All</option>
+              <option value="pending">Pending payout</option>
+              <option value="paid">Paid out</option>
+            </select>
+          </div>
         }
       />
-      <div className="card table-wrap">
+      <ListPanel footer={<Pagination page={page} total={total} limit={limit} onChange={setPage} />}>
         {loading ? <div className="loading-state">Loading…</div> : (
-          <table className="responsive-table">
-            <thead><tr><th>Assistant</th><th>Amount</th><th>Description</th><th>Paid out</th><th>Action</th></tr></thead>
-            <tbody>
-              {filtered.map((e) => (
-                <tr key={e.id}>
-                  <td data-label="Assistant">{e.assistant?.name ?? '—'}</td>
-                  <td data-label="Amount">₹{e.amount}</td>
-                  <td data-label="Description">{e.description}</td>
-                  <td data-label="Paid">{e.isPaidOut ? <span className="badge badge-green">Yes</span> : <span className="badge badge-orange">Pending</span>}</td>
-                  <td data-label="Action">
-                    {!e.isPaidOut && (
-                      <button type="button" className="btn btn-success btn-sm" onClick={async () => { await adminApi.markPayout(e.id); reload(); }}>Mark paid</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-wrap">
+            <table className="responsive-table">
+              <thead><tr><th>Assistant</th><th>Amount</th><th>Description</th><th>Paid out</th><th>Action</th></tr></thead>
+              <tbody>
+                {filtered.map((e) => (
+                  <tr key={e.id}>
+                    <td data-label="Assistant">{e.assistant?.name ?? '—'}</td>
+                    <td data-label="Amount">₹{e.amount}</td>
+                    <td data-label="Description">{e.description}</td>
+                    <td data-label="Paid">{e.isPaidOut ? <span className="badge badge-green">Yes</span> : <span className="badge badge-orange">Pending</span>}</td>
+                    <td data-label="Action">
+                      {!e.isPaidOut && (
+                        <button type="button" className="btn btn-success btn-sm" onClick={async () => { await adminApi.markPayout(e.id); reload(); }}>Mark paid</button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onChange={setPage} />
+      </ListPanel>
     </div>
   );
 }
