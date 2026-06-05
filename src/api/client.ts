@@ -14,16 +14,73 @@ export function setToken(token: string | null) {
   else localStorage.removeItem('admin_token');
 }
 
-export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'X-Active-Role': 'admin',
-    ...(options.headers as Record<string, string> | undefined),
-  };
-  const token = getToken();
-  if (token) headers.Authorization = `Bearer ${token}`;
+function getRefreshToken() {
+  return localStorage.getItem('admin_refresh_token');
+}
 
-  const url = `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+export function setRefreshToken(token: string | null) {
+  if (token) localStorage.setItem('admin_refresh_token', token);
+  else localStorage.removeItem('admin_refresh_token');
+}
+
+export function clearAuthTokens() {
+  setToken(null);
+  setRefreshToken(null);
+}
+
+let refreshInFlight: Promise<string | null> | null = null;
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refresh = getRefreshToken();
+  if (!refresh) return null;
+
+  if (!refreshInFlight) {
+    refreshInFlight = fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: refresh }),
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        const json = await res.json().catch(() => ({}));
+        const data = parseApiPayload<{ accessToken: string; refreshToken?: string }>(json);
+        if (!data.accessToken) return null;
+        setToken(data.accessToken);
+        if (data.refreshToken) setRefreshToken(data.refreshToken);
+        return data.accessToken;
+      })
+      .catch(() => null)
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+
+  return refreshInFlight;
+}
+
+function authHeaders(extra?: Record<string, string>, token?: string | null): Record<string, string> {
+  const headers: Record<string, string> = {
+    'X-Active-Role': 'admin',
+    ...(extra ?? {}),
+  };
+  const access = token ?? getToken();
+  if (access) headers.Authorization = `Bearer ${access}`;
+  return headers;
+}
+
+async function authorizedFetch(
+  url: string,
+  options: RequestInit = {},
+  allowRefresh = true,
+): Promise<Response> {
+  const isFormData = options.body instanceof FormData;
+  const headers = authHeaders(
+    {
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(options.headers as Record<string, string> | undefined),
+    },
+    getToken(),
+  );
 
   let res: Response;
   try {
@@ -32,6 +89,31 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     throw new Error(apiReachabilityHint());
   }
 
+  if (res.status === 401 && allowRefresh && getRefreshToken()) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      const retryHeaders = authHeaders(
+        {
+          ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+          ...(options.headers as Record<string, string> | undefined),
+        },
+        newToken,
+      );
+      res = await fetch(url, { ...options, headers: retryHeaders });
+    } else {
+      clearAuthTokens();
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login?expired=1';
+      }
+    }
+  }
+
+  return res;
+}
+
+export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const url = `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+  const res = await authorizedFetch(url, options);
   const json = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -39,7 +121,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
       json?.error?.message ??
       json?.message ??
       (typeof json?.error === 'string' ? json.error : null) ??
-      `Request failed (${res.status})`;
+      (res.status === 401 ? 'Session expired — please log in again' : `Request failed (${res.status})`);
     throw new Error(msg);
   }
   return parseApiPayload<T>(json);
@@ -134,12 +216,8 @@ export const adminApi = {
   rejections: (params?: Record<string, string>) =>
     api<Paginated<RejectionRow>>(`/admin/rejections?${new URLSearchParams(params ?? {})}`),
   exportBookingsCsv: async () => {
-    const token = getToken();
-    const res = await fetch(`${API_BASE}/admin/bookings/export/csv`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : '',
-        'X-Active-Role': 'admin',
-      },
+    const res = await authorizedFetch(`${API_BASE}/admin/bookings/export/csv`, {
+      headers: { 'X-Active-Role': 'admin' },
     });
     if (!res.ok) throw new Error('Export failed');
     return res.text();
@@ -182,14 +260,20 @@ export const adminApi = {
     api<{ deleted: boolean }>(`/admin/home-feed-ads/${id}`, { method: 'DELETE' }),
 };
 
+const PUBLIC_API_ORIGIN =
+  (import.meta.env.VITE_PUBLIC_API_ORIGIN as string | undefined)?.trim().replace(/\/$/, '') ||
+  'https://api.liftoo.in';
+
 /** Rewrites localhost upload URLs to production API so admin preview & app can load images. */
 export function normalizePublicUploadUrl(url: string): string {
   if (!url) return url;
+  if (url.startsWith('upload://')) return url;
+  if (url.startsWith('/uploads/')) return `${PUBLIC_API_ORIGIN}${url}`;
   const lower = url.toLowerCase();
   if (lower.includes('localhost') || lower.includes('127.0.0.1')) {
     try {
       const path = new URL(url).pathname;
-      return `https://api.liftoo.in${path}`;
+      return `${PUBLIC_API_ORIGIN}${path}`;
     } catch {
       return url;
     }
@@ -197,16 +281,33 @@ export function normalizePublicUploadUrl(url: string): string {
   return url;
 }
 
+export type ResolvedFile = {
+  url: string | null;
+  isImage: boolean;
+  isPdf: boolean;
+  isInvalid: boolean;
+};
+
+/** Resolves KYC / verification file URLs for admin preview and download. */
+export function resolveVerificationFileUrl(fileUrl: string | null | undefined): ResolvedFile {
+  if (!fileUrl?.trim()) {
+    return { url: null, isImage: false, isPdf: false, isInvalid: false };
+  }
+  if (fileUrl.startsWith('upload://')) {
+    return { url: null, isImage: true, isPdf: false, isInvalid: true };
+  }
+
+  const normalized = normalizePublicUploadUrl(fileUrl.trim());
+  const isPdf = /\.pdf$/i.test(normalized);
+  const isImage = !isPdf && (/\.(jpe?g|png|webp|gif)$/i.test(normalized) || normalized.includes('/uploads/'));
+  return { url: normalized, isImage, isPdf, isInvalid: false };
+}
+
 export async function adminUploadImage(file: File): Promise<{ url: string }> {
   const form = new FormData();
   form.append('file', file);
-  const token = getToken();
-  const res = await fetch(`${API_BASE}/upload/file`, {
+  const res = await authorizedFetch(`${API_BASE}/upload/file`, {
     method: 'POST',
-    headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-      'X-Active-Role': 'admin',
-    },
     body: form,
   });
   const json = await res.json().catch(() => ({}));

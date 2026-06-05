@@ -88,7 +88,7 @@ export function HomeAdsPage() {
     <div className="page">
       <PageHeader
         title="Home feed ads"
-        subtitle="Banner below Refer & Earn on the customer app home screen. Only one ad can be live at a time."
+        subtitle="Carousel below Refer & Earn on the customer app home screen. Up to 5 live ads auto-slide; each has its own title and button on the image."
       />
 
       <div className="card home-ad-guidelines">
@@ -104,10 +104,10 @@ export function HomeAdsPage() {
             <strong>Format:</strong> JPG or PNG, under 2 MB (max upload 5 MB)
           </li>
           <li>
-            <strong>Safe zone:</strong> Keep text and logos in the centre; edges may be cropped on small screens
+            <strong>Safe zone:</strong> Title and button appear as overlay on the bottom of the image — keep the lower third clear of important artwork
           </li>
           <li>
-            After upload, tick <strong>Live on home feed</strong> and save — only one ad is shown at a time
+            After upload, tick <strong>Live on home feed</strong> — you can have up to 5 live ads; lower sort order appears first
           </li>
         </ul>
       </div>
@@ -191,7 +191,7 @@ export function HomeAdsPage() {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />
-            <span>Live on home feed (deactivates other ads)</span>
+            <span>Live on home feed (shown in auto-sliding carousel)</span>
           </label>
         </div>
         <div className="form-actions form-actions--start">

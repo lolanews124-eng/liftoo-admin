@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { adminApi, AdminUser, setToken } from '../api/client';
+import { adminApi, AdminUser, clearAuthTokens, setRefreshToken, setToken } from '../api/client';
 
 interface AuthContextValue {
   user: AdminUser | null;
@@ -25,11 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     const res = await adminApi.login(email, password);
     setToken(res.accessToken);
+    setRefreshToken(res.refreshToken);
     setUser(res.user);
   };
 
   const logout = () => {
-    setToken(null);
+    clearAuthTokens();
     setUser(null);
   };
 
