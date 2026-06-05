@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { adminApi, AdminBroadcastRow } from '../api/client';
 import { DataPanel } from '../components/DataPanel';
 import { PageHeader } from '../components/PageHeader';
+import { formatAppDateTime } from '../utils/formatDate';
 import { Pagination } from '../components/Pagination';
 import { EMPTY_FILTERS, usePaginatedList } from '../hooks/usePaginatedList';
 
@@ -140,7 +141,7 @@ export function NotificationsPage() {
                 <tbody>
                   {items.map((b) => (
                     <tr key={b.id}>
-                      <td data-label="When">{new Date(b.createdAt).toLocaleString()}</td>
+                      <td data-label="When">{formatAppDateTime(b.createdAt)}</td>
                       <td data-label="Audience">
                         <span className={`badge ${b.audience === 'customer' ? 'badge-green' : 'badge-orange'}`}>
                           {b.audience === 'customer' ? 'Customers' : 'Assistants'}

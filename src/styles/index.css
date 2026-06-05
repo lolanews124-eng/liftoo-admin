@@ -566,6 +566,29 @@ tbody tr:last-child td { border-bottom: none; }
   white-space: pre-wrap;
   word-break: break-word;
 }
+.doc-meta-block {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.doc-meta-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 38%) 1fr;
+  gap: 10px;
+  font-size: 13px;
+  align-items: start;
+}
+.doc-meta-row span {
+  color: var(--muted);
+  font-weight: 600;
+}
+.doc-meta-row strong {
+  color: var(--text);
+  word-break: break-word;
+}
 .doc-admin-note {
   margin: 0;
   font-size: 12px;

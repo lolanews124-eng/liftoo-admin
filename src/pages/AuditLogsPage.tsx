@@ -5,6 +5,7 @@ import { usePaginatedList } from '../hooks/usePaginatedList';
 import { ListPanel } from '../components/ListPanel';
 import { PageHeader } from '../components/PageHeader';
 import { downloadCsv } from '../utils/exportCsv';
+import { formatAppDateTime } from '../utils/formatDate';
 
 export function AuditLogsPage() {
   const [search, setSearch] = useState('');
@@ -99,7 +100,7 @@ export function AuditLogsPage() {
             <tbody>
               {filtered.map((l) => (
                 <tr key={l.id}>
-                  <td data-label="When">{new Date(l.createdAt).toLocaleString()}</td>
+                  <td data-label="When">{formatAppDateTime(l.createdAt)}</td>
                   <td data-label="Action"><span className="badge badge-gray">{l.action}</span></td>
                   <td data-label="Entity">{l.entity}</td>
                   <td data-label="ID">{l.entityId ? `${l.entityId.slice(0, 8)}…` : '—'}</td>

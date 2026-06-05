@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { adminApi, PayoutRequest } from '../api/client';
 import { PageHeader } from '../components/PageHeader';
+import { formatAppDate } from '../utils/formatDate';
 
 export function PayoutsPage() {
   const [items, setItems] = useState<PayoutRequest[]>([]);
@@ -43,7 +44,7 @@ export function PayoutsPage() {
                 <td>₹{p.amount}</td>
                 <td>{p.bankAccount ?? '—'} / {p.ifscCode ?? '—'}</td>
                 <td><span className="badge badge-orange">{p.status}</span></td>
-                <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+                <td>{formatAppDate(p.createdAt)}</td>
                 <td data-label="Actions">
                   <div className="action-row">
                     {p.status === 'pending' && (

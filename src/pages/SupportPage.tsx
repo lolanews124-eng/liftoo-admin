@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { adminApi, SupportTicket } from '../api/client';
 import { PageHeader } from '../components/PageHeader';
+import { formatAppDate } from '../utils/formatDate';
 
 export function SupportPage() {
   const [items, setItems] = useState<SupportTicket[]>([]);
@@ -43,7 +44,7 @@ export function SupportPage() {
                 <td>{t.user?.name ?? t.user?.phone}</td>
                 <td>{t.subject}</td>
                 <td>{t.status}</td>
-                <td>{new Date(t.createdAt).toLocaleDateString()}</td>
+                <td>{formatAppDate(t.createdAt)}</td>
                 <td><button className="btn btn-outline" onClick={() => { setSelected(t); setReply(t.adminReply ?? ''); }}>View</button></td>
               </tr>
             ))}

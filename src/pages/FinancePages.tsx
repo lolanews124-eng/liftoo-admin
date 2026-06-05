@@ -7,6 +7,7 @@ import { Pagination } from '../components/Pagination';
 import { DataPanel } from '../components/DataPanel';
 import { EMPTY_FILTERS, usePaginatedList } from '../hooks/usePaginatedList';
 import { downloadCsv } from '../utils/exportCsv';
+import { formatAppDateTime } from '../utils/formatDate';
 
 function FinanceToolbar({
   search,
@@ -77,7 +78,7 @@ export function PaymentsPage() {
                     <td data-label="Status"><PaymentStatusBadge status={p.status} /></td>
                     <td data-label="Customer">{p.booking?.customer?.name ?? '—'}</td>
                     <td data-label="Booking">{p.booking?.venueName ?? '—'}</td>
-                    <td data-label="Date">{new Date(p.createdAt).toLocaleString()}</td>
+                    <td data-label="Date">{formatAppDateTime(p.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { adminApi } from '../api/client';
 import { RoleEditor } from '../components/RoleEditor';
+import { formatAppDateTime } from '../utils/formatDate';
 
 export function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -142,7 +143,7 @@ export function UserDetailPage() {
                     <td>{t.type}</td>
                     <td>₹{t.amount}</td>
                     <td>{t.description}</td>
-                    <td>{new Date(t.createdAt).toLocaleString()}</td>
+                    <td>{formatAppDateTime(t.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

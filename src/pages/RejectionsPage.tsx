@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
 import { EMPTY_FILTERS, usePaginatedList } from '../hooks/usePaginatedList';
 import { downloadCsv } from '../utils/exportCsv';
+import { formatAppDateTime } from '../utils/formatDate';
 
 export function RejectionsPage() {
   const { items, total, page, setPage, loading, error, limit, reload } =
@@ -68,7 +69,7 @@ export function RejectionsPage() {
                     <td data-label="Booking">{r.booking?.venueName ?? r.bookingId.slice(0, 8)}</td>
                     <td data-label="Service">{r.booking?.category?.name ?? '—'}</td>
                     <td data-label="Reason">{r.reason}</td>
-                    <td data-label="When">{new Date(r.createdAt).toLocaleString()}</td>
+                    <td data-label="When">{formatAppDateTime(r.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

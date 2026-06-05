@@ -6,6 +6,7 @@ import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
 import { BookingStatusBadge, PaymentStatusBadge } from '../components/StatusBadge';
 import { usePaginatedList } from '../hooks/usePaginatedList';
+import { formatAppDateTime } from '../utils/formatDate';
 import { isPaymentPending } from '../utils/status';
 
 export function BookingsPage() {
@@ -139,7 +140,7 @@ export function BookingsPage() {
                   <td data-label="Customer">{b.customer?.name ?? '—'}</td>
                   <td data-label="Assistant">{b.assistant?.name ?? '—'}</td>
                   <td data-label="Venue">{b.venueName}</td>
-                  <td data-label="Scheduled">{new Date(b.scheduledAt).toLocaleString()}</td>
+                  <td data-label="Scheduled">{formatAppDateTime(b.scheduledAt)}</td>
                   <td data-label="Status"><BookingStatusBadge status={b.status} /></td>
                   <td data-label="Payment">
                     {isPaymentPending(b.status, b.payment) ? (
@@ -183,7 +184,7 @@ export function BookingsPage() {
               </div>
               <div className="detail-block">
                 <h4>Schedule & place</h4>
-                <p>{new Date(selected.scheduledAt).toLocaleString()} · {selected.durationMin} min</p>
+                <p>{formatAppDateTime(selected.scheduledAt)} · {selected.durationMin} min</p>
                 <p>{selected.venueName}</p>
                 <p className="cell-sub">{selected.addressFormatted}</p>
               </div>
@@ -207,7 +208,7 @@ export function BookingsPage() {
                       <PaymentStatusBadge status={selected.payment.status} /> ₹{selected.payment.amount}
                     </p>
                     {selected.payment.cashCollectedAt && (
-                      <p className="cell-sub">Cash collected: {new Date(selected.payment.cashCollectedAt).toLocaleString()}</p>
+                      <p className="cell-sub">Cash collected: {formatAppDateTime(selected.payment.cashCollectedAt)}</p>
                     )}
                   </>
                 ) : isPaymentPending(selected.status, null) ? (
@@ -227,7 +228,7 @@ export function BookingsPage() {
               {selected.statusHistory?.map((h) => (
                 <li key={h.createdAt}>
                   <BookingStatusBadge status={h.status} />
-                  <span>{new Date(h.createdAt).toLocaleString()}</span>
+                  <span>{formatAppDateTime(h.createdAt)}</span>
                   {h.note && <span className="cell-sub"> — {h.note}</span>}
                 </li>
               ))}

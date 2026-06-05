@@ -2,6 +2,50 @@ import { useEffect, useState } from 'react';
 import { adminApi, resolveVerificationFileUrl, VerificationDetail, VerificationDoc } from '../api/client';
 import { ImageLightbox } from '../components/ImageLightbox';
 import { PageHeader } from '../components/PageHeader';
+import { formatAppDateTime } from '../utils/formatDate';
+
+function DocMetadata({ doc }: { doc: VerificationDoc }) {
+  const meta = doc.metadata as Record<string, string> | null | undefined;
+  if (!meta || typeof meta !== 'object') return null;
+
+  const row = (label: string, value?: string | null) => {
+    if (!value?.trim()) return null;
+    return (
+      <div key={label} className="doc-meta-row">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+    );
+  };
+
+  if (doc.type === 'bank_details') {
+    return (
+      <div className="doc-meta-block">
+        {row('Account holder', meta.accountHolderName)}
+        {row('Bank name', meta.bankName)}
+        {row('Account number', meta.accountNumber)}
+        {row('IFSC', meta.ifsc)}
+      </div>
+    );
+  }
+
+  if (doc.type === 'full_address') {
+    return (
+      <div className="doc-meta-block">
+        {row('Full address', meta.fullAddress)}
+        {row('Post / area', meta.post)}
+        {row('Police station', meta.policeStation)}
+        {row('Block', meta.block)}
+        {row('District', meta.district)}
+        {row('State', meta.state)}
+        {row('Country', meta.country)}
+        {row('Pincode', meta.pincode)}
+      </div>
+    );
+  }
+
+  return null;
+}
 
 function DocPreview({ doc, onViewImage }: { doc: VerificationDoc; onViewImage: (url: string, label: string) => void }) {
   const resolved = resolveVerificationFileUrl(doc.fileUrl);
@@ -201,7 +245,7 @@ export function VerificationsPage() {
                       <div>
                         <strong>{d.label ?? d.type}</strong>
                         {d.uploadedAt && (
-                          <span className="cell-sub">Uploaded {new Date(d.uploadedAt).toLocaleString()}</span>
+                          <span className="cell-sub">Uploaded {formatAppDateTime(d.uploadedAt)}</span>
                         )}
                       </div>
                       <span
@@ -219,9 +263,11 @@ export function VerificationsPage() {
                       </span>
                     </div>
 
-                    {d.textValue && !d.fileUrl && (
+                    {d.textValue && (
                       <p className="doc-text-value">{d.textValue}</p>
                     )}
+
+                    <DocMetadata doc={d} />
 
                     <DocPreview doc={d} onViewImage={(src, alt) => setLightbox({ src, alt })} />
 
