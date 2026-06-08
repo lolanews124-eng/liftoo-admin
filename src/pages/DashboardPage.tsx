@@ -29,6 +29,8 @@ export function DashboardPage() {
           pendingVerifications: s.pendingVerifications ?? 0,
           pendingPayments: s.pendingPayments ?? 0,
           openSupportTickets: s.openSupportTickets ?? 0,
+          newWebsiteInquiries: s.newWebsiteInquiries ?? 0,
+          newAssistantApplications: s.newAssistantApplications ?? 0,
           revenue: {
             total: s.revenue?.total ?? 0,
             platform: s.revenue?.platform ?? 0,
@@ -67,6 +69,16 @@ export function DashboardPage() {
     (stats.openSupportTickets ?? 0) > 0 && {
       label: `${stats.openSupportTickets} open support tickets`,
       to: '/support',
+      tone: 'info',
+    },
+    (stats.newWebsiteInquiries ?? 0) > 0 && {
+      label: `${stats.newWebsiteInquiries} new website contact messages`,
+      to: '/website-contact',
+      tone: 'info',
+    },
+    (stats.newAssistantApplications ?? 0) > 0 && {
+      label: `${stats.newAssistantApplications} new assistant applications`,
+      to: '/assistant-applications',
       tone: 'info',
     },
   ].filter(Boolean) as { label: string; to: string; tone: string }[];

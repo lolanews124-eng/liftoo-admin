@@ -35,8 +35,11 @@ import { PromosPage } from './pages/PromosPage';
 import { PayoutsPage } from './pages/PayoutsPage';
 
 import { SupportPage } from './pages/SupportPage';
+import { WebsiteContactPage } from './pages/WebsiteContactPage';
+import { AssistantApplicationsPage } from './pages/AssistantApplicationsPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { HomeAdsPage } from './pages/HomeAdsPage';
+import { HomeHeroPage } from './pages/HomeHeroPage';
 
 
 
@@ -111,6 +114,7 @@ export default function App() {
             <Route path="settings" element={<SettingsPage />} />
 
             <Route path="home-ads" element={<HomeAdsPage />} />
+            <Route path="home-hero" element={<HomeHeroPage />} />
 
             <Route path="rejections" element={<RejectionsPage />} />
 
@@ -119,6 +123,10 @@ export default function App() {
             <Route path="payouts" element={<PayoutsPage />} />
 
             <Route path="support" element={<SupportPage />} />
+
+            <Route path="website-contact" element={<WebsiteContactPage />} />
+
+            <Route path="assistant-applications" element={<AssistantApplicationsPage />} />
 
             <Route path="notifications" element={<NotificationsPage />} />
 

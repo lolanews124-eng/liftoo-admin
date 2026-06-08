@@ -258,6 +258,36 @@ export const adminApi = {
     }),
   deleteHomeFeedAd: (id: string) =>
     api<{ deleted: boolean }>(`/admin/home-feed-ads/${id}`, { method: 'DELETE' }),
+  homeHeroSlides: () => api<HomeHeroSlide[]>('/admin/home-hero-slides'),
+  createHomeHeroSlide: (body: Partial<HomeHeroSlide>) =>
+    api<HomeHeroSlide>('/admin/home-hero-slides', { method: 'POST', body: JSON.stringify(body) }),
+  updateHomeHeroSlide: (id: string, body: Partial<HomeHeroSlide>) =>
+    api<HomeHeroSlide>(`/admin/home-hero-slides/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  toggleHomeHeroSlide: (id: string, isActive: boolean) =>
+    api<HomeHeroSlide>(`/admin/home-hero-slides/${id}/toggle`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    }),
+  deleteHomeHeroSlide: (id: string) =>
+    api<{ deleted: boolean }>(`/admin/home-hero-slides/${id}`, { method: 'DELETE' }),
+  websiteContactInquiries: (status?: string) =>
+    api<WebsiteContactInquiry[]>(
+      `/admin/website/contact-inquiries${status ? `?status=${status}` : ''}`,
+    ),
+  updateWebsiteContactInquiry: (id: string, body: Partial<WebsiteContactInquiry>) =>
+    api<WebsiteContactInquiry>(`/admin/website/contact-inquiries/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
+  assistantApplications: (status?: string) =>
+    api<AssistantApplication[]>(
+      `/admin/website/assistant-applications${status ? `?status=${status}` : ''}`,
+    ),
+  updateAssistantApplication: (id: string, body: Partial<AssistantApplication>) =>
+    api<AssistantApplication>(`/admin/website/assistant-applications/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
 };
 
 const PUBLIC_API_ORIGIN =
@@ -335,6 +365,20 @@ export interface HomeFeedAd {
   updatedAt: string;
 }
 
+export interface HomeHeroSlide {
+  id: string;
+  tag: string;
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+  imageUrl: string;
+  accentColor?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BroadcastResult {
   broadcast: AdminBroadcastRow;
   audience: 'customer' | 'assistant';
@@ -376,8 +420,35 @@ export interface DashboardStats {
   pendingVerifications: number;
   pendingPayments?: number;
   openSupportTickets?: number;
+  newWebsiteInquiries?: number;
+  newAssistantApplications?: number;
   revenue: { total: number; platform: number; pendingPayouts: number };
   recentBookings: BookingRow[];
+}
+
+export interface WebsiteContactInquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  status: 'new' | 'read' | 'replied' | 'closed';
+  adminNote?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssistantApplication {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string | null;
+  city: string;
+  message?: string | null;
+  status: 'new' | 'contacted' | 'approved' | 'rejected';
+  adminNote?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserRow {

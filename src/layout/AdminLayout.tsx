@@ -17,6 +17,8 @@ const NAV_SECTIONS = [
       { to: '/verifications', label: 'KYC', icon: '✅', badgeKey: 'kyc' as const },
       { to: '/rejections', label: 'Rejections', icon: '↩️' },
       { to: '/support', label: 'Support', icon: '💬', badgeKey: 'support' as const },
+      { to: '/website-contact', label: 'Website contact', icon: '📩', badgeKey: 'websiteContact' as const },
+      { to: '/assistant-applications', label: 'Assistant apply', icon: '📝', badgeKey: 'assistantApply' as const },
       { to: '/notifications', label: 'Notifications', icon: '🔔' },
     ],
   },
@@ -37,6 +39,7 @@ const NAV_SECTIONS = [
       { to: '/cities', label: 'Service area', icon: '📍' },
       { to: '/reviews', label: 'Reviews', icon: '★' },
       { to: '/settings', label: 'Settings', icon: '⚙️' },
+      { to: '/home-hero', label: 'Home hero', icon: '🖼️' },
       { to: '/home-ads', label: 'Home ads', icon: '📢' },
       { to: '/audit-logs', label: 'Audit logs', icon: '📋' },
     ],
@@ -48,7 +51,7 @@ function NavLinks({
   badges,
 }: {
   onNavigate?: () => void;
-  badges: { kyc: number; support: number };
+  badges: { kyc: number; support: number; websiteContact: number; assistantApply: number };
 }) {
   return (
     <>
@@ -62,7 +65,11 @@ function NavLinks({
                 ? badges.kyc
                 : key === 'support' && badges.support > 0
                   ? badges.support
-                  : 0;
+                  : key === 'websiteContact' && badges.websiteContact > 0
+                    ? badges.websiteContact
+                    : key === 'assistantApply' && badges.assistantApply > 0
+                      ? badges.assistantApply
+                      : 0;
             return (
               <NavLink
                 key={l.to}
@@ -87,7 +94,7 @@ export function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [badges, setBadges] = useState({ kyc: 0, support: 0 });
+  const [badges, setBadges] = useState({ kyc: 0, support: 0, websiteContact: 0, assistantApply: 0 });
 
   useEffect(() => {
     adminApi
@@ -96,6 +103,8 @@ export function AdminLayout() {
         setBadges({
           kyc: s.pendingVerifications ?? 0,
           support: s.openSupportTickets ?? 0,
+          websiteContact: s.newWebsiteInquiries ?? 0,
+          assistantApply: s.newAssistantApplications ?? 0,
         }),
       )
       .catch(() => undefined);
